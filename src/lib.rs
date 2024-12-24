@@ -1,7 +1,7 @@
 use serde_json::json;
 use std::os::unix::io::RawFd;
 
-mod connection;
+pub mod connection;
 
 pub mod activity;
 pub mod event;
