@@ -1,8 +1,3 @@
-use rand::{
-    distributions::{Alphanumeric, DistString},
-    thread_rng,
-};
-
 use nix::cmsg_space;
 
 use nix::sys::socket::{
@@ -13,15 +8,17 @@ use nix::sys::socket::{
 use nix::errno::Errno;
 
 use std::os::unix::io::RawFd;
-
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::process::{Command, Stdio};
 
 use serde_json::{json, Value};
 
 pub fn connect() -> (RawFd, RawFd) {
-    let main_addr = Alphanumeric.sample_string(&mut thread_rng(), 50);
-    let event_addr = Alphanumeric.sample_string(&mut thread_rng(), 50);
-
+    static DISAMBIGUATE: AtomicUsize = AtomicUsize::new(0);
+    let dis = DISAMBIGUATE.fetch_add(1, Ordering::Relaxed);
+    let id = std::process::id();
+    let main_addr = format!("rust/tgui/{id}/{dis}/main");
+    let event_addr = format!("rust/tgui/{id}/{dis}/event");
     let main_sock_addr = UnixAddr::new_abstract(&main_addr.as_bytes()).unwrap();
     let event_sock_addr = UnixAddr::new_abstract(&event_addr.as_bytes()).unwrap();
 
