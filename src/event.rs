@@ -8,6 +8,7 @@ pub const TOUCH: &str = "touch";
 pub const REFRESH: &str = "refresh";
 pub const SELECTED: &str = "selected";
 pub const ITEM_SELECTED: &str = "itemselected";
+pub const TEXT: &str = "text";
 
 pub const CREATE: &str = "create";
 pub const START: &str = "start";
@@ -36,6 +37,7 @@ pub const TOUCH_POINTER_DOWN: &str = "pointer_down";
 pub const TOUCH_CANCEL: &str = "cancel";
 pub const TOUCH_MOVE: &str = "move";
 
+#[derive(Debug)]
 pub struct Event {
     pub ty: String,
     pub value: Value,
