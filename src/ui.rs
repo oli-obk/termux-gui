@@ -4,8 +4,10 @@ use super::layouts::{
     linear_layout::LinearLayout, nested_scroll_view::NestedScrollView, radio_group::RadioGroup,
     swipe_refresh_layout::SwipeRefreshLayout, tab_layout::TabLayout,
 };
+#[cfg(feature = "image")]
+use super::widgets::image::ImageView;
 use super::widgets::{
-    button::Button, check_box::CheckBox, edit_text::EditText, image::ImageView, label::Label,
+    button::Button, check_box::CheckBox, edit_text::EditText, label::Label,
     progress_bar::ProgressBar, radio_button::RadioButton, space::Space, spinner::Spinner,
     switch::Switch, toggle_button::ToggleButton, View,
 };
@@ -103,6 +105,7 @@ impl<'a> Ui<'a> {
         self.label(parent, text, false, false)
     }
 
+    #[cfg(feature = "image")]
     pub fn image_view(&self, parent: Option<&dyn View>) -> ImageView {
         let parent: Option<i32> = match parent {
             Some(parent) => Some(parent.get_id()),

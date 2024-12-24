@@ -1,3 +1,5 @@
+#![cfg(feature = "image")]
+
 use tgui::TGui;
 use tgui::AF;
 

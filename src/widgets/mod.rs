@@ -8,6 +8,7 @@ pub mod button;
 pub mod check_box;
 pub mod compound_button;
 pub mod edit_text;
+#[cfg(feature = "image")]
 pub mod image;
 pub mod label;
 pub mod progress_bar;
