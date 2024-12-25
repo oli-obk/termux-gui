@@ -8,7 +8,6 @@ pub const TOUCH: &str = "touch";
 pub const REFRESH: &str = "refresh";
 pub const SELECTED: &str = "selected";
 pub const ITEM_SELECTED: &str = "itemselected";
-pub const TEXT: &str = "text";
 
 pub const USER_LEAVE_HINT: &str = "UserLeaveHint";
 pub const PIP_CHANGED: &str = "pipchanged";
@@ -39,6 +38,12 @@ pub enum Event {
         aid: i32,
         #[serde(default)]
         set: bool,
+    },
+    Text {
+        id: i32,
+        aid: i32,
+
+        text: String,
     },
     Resume {
         aid: i32,
