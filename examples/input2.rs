@@ -19,13 +19,13 @@ fn main() {
     let switch = ui.default_switch(Some(&layout), "Switch");
 
     loop {
-        let event = tgui.event();
+        let event = tgui.event().unwrap();
         if event.ty == tgui::event::DESTROY
             && event.value["finishing"].to_string().trim().parse().unwrap()
         {
             std::process::exit(0);
         }
-        if event.ty == tgui::event::CLICK && event.id == switch.get_id() {
+        if event.ty == tgui::event::CLICK && event.id().unwrap() == switch.get_id() {
             ui.finish();
         }
     }

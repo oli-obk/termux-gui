@@ -8,9 +8,10 @@ use nix::sys::socket::{
 use nix::errno::Errno;
 
 use std::os::unix::io::RawFd;
-use std::sync::atomic::{AtomicUsize, Ordering};
 use std::process::{Command, Stdio};
+use std::sync::atomic::{AtomicUsize, Ordering};
 
+use serde::Deserialize;
 use serde_json::{json, Value};
 
 pub fn connect() -> (RawFd, RawFd) {
@@ -91,10 +92,11 @@ pub fn connect() -> (RawFd, RawFd) {
     let main = accept(main_sock).unwrap();
     let event = accept(event_sock).unwrap();
 
-    let mut protocol = [1u8];
+    let protocol = [1u8];
     while send(main, &protocol, MsgFlags::empty()).unwrap() == 0 {}
-    protocol = [0u8];
-    while recv(main, &mut protocol, MsgFlags::empty()).unwrap() == 0 {}
+    let mut res = [0u8];
+    while recv(main, &mut res, MsgFlags::empty()).unwrap() == 0 {}
+    assert_eq!(res, [0]);
     (main, event)
 }
 
@@ -103,35 +105,47 @@ pub fn transmit_buffer(fd: &RawFd, msg: &[u8]) {
     let mut start = 0;
     while len > 0 {
         let ret = send(*fd, &msg[start..], MsgFlags::empty()).unwrap();
-        len = len.saturating_sub(ret);
+        len = len.checked_sub(ret).expect("sent more bytes than we had");
         start += ret;
     }
 }
 
 pub fn recv_msg(fd: &RawFd) -> Value {
+    try_recv_msg(fd).unwrap_or(Value::Null)
+}
+
+pub fn try_recv_msg<T: for<'a> Deserialize<'a>>(fd: &RawFd) -> Result<T, serde_json::Error> {
     let mut size = [0u8; 4];
     let mut togo = 4usize;
     let mut start = 0;
 
     while togo > 0 {
         let ret = recv(*fd, &mut size[start..], MsgFlags::empty()).unwrap();
-        togo = togo.saturating_sub(ret);
+        togo = togo.checked_sub(ret).unwrap();
         start += ret;
     }
 
-    togo = u32::from_be_bytes(size) as usize;
+    let n = u32::from_be_bytes(size) as usize;
+    togo = n;
+    start = 0;
+
     let mut msg = [0u8; 1024 * 64];
     while togo > 0 {
-        let ret = recv(*fd, &mut msg[start..], MsgFlags::empty()).unwrap();
-        togo = togo.saturating_sub(ret);
+        let ret = recv(*fd, &mut msg[start..n], MsgFlags::empty()).unwrap();
+        togo = togo.checked_sub(ret).unwrap();
         start += ret;
     }
 
     let msg: Vec<u8> = msg.iter().map(|&v| v).filter(|&val| val != b'\0').collect();
-    match serde_json::from_slice(&msg) {
-        Ok(val) => val,
-        Err(_) => json!(null),
+    let res = serde_json::from_slice(&msg);
+    if res.is_err() {
+        eprintln!(
+            "error while parsing {} from {}",
+            std::any::type_name::<T>(),
+            std::str::from_utf8(&msg).unwrap()
+        );
     }
+    res
 }
 
 pub fn recv_msg_fd(fd: &RawFd) -> (Value, u8) {

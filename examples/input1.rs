@@ -27,13 +27,13 @@ fn main() {
     let cancel = ui.button(Some(&buttons), "Cancel");
 
     loop {
-        let event = tgui.event();
+        let event = tgui.event().unwrap();
         if event.ty == tgui::event::DESTROY
             && event.value["finishing"].to_string().trim().parse().unwrap()
         {
             std::process::exit(0);
         }
-        if event.ty == tgui::event::CLICK && event.id == cancel.get_id() {
+        if event.ty == tgui::event::CLICK && event.id().unwrap() == cancel.get_id() {
             ui.finish();
         }
     }

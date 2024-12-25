@@ -41,9 +41,8 @@ impl TGui {
         ui::Ui::new(&self.main, tid, flags)
     }
 
-    pub fn event(&self) -> event::Event {
-        let event = connection::recv_msg(&self.event);
-        event::Event::new(event)
+    pub fn event(&self) -> Result<event::Event, serde_json::Error> {
+        connection::try_recv_msg(&self.event)
     }
 
     pub fn toast(&self, text: &str, long: bool) {

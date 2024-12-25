@@ -57,7 +57,7 @@ impl<'a> EditText<'a> {
 
         });
         self.send_msg(construct_message("sendTextEvent", &args));
-   }
+    }
 }
 
 impl<'a> TextView for EditText<'a> {}
