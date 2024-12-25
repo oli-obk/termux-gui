@@ -137,15 +137,7 @@ pub fn try_recv_msg<T: for<'a> Deserialize<'a>>(fd: &RawFd) -> Result<T, serde_j
     }
 
     let msg: Vec<u8> = msg.iter().map(|&v| v).filter(|&val| val != b'\0').collect();
-    let res = serde_json::from_slice(&msg);
-    if res.is_err() {
-        eprintln!(
-            "error while parsing {} from {}",
-            std::any::type_name::<T>(),
-            std::str::from_utf8(&msg).unwrap()
-        );
-    }
-    res
+    serde_json::from_slice(&msg)
 }
 
 pub fn recv_msg_fd(fd: &RawFd) -> (Value, u8) {

@@ -20,7 +20,7 @@ pub mod toggle_button;
 
 pub trait View {
     fn get_id(&self) -> i32;
-    fn get_aid(&self) -> &str;
+    fn get_aid(&self) -> i32;
     fn get_sock(&self) -> &RawFd;
 
     fn send_recv_msg(&self, msg: serde_json::Value) -> serde_json::Value {

@@ -3,13 +3,13 @@ use super::{construct_message, send_recv_msg, RawFd, View, ViewGroup};
 use serde_json::json;
 
 pub struct TabLayout<'a> {
-    aid: &'a str,
+    aid: i32,
     id: i32,
     sock: &'a RawFd,
 }
 
 impl<'a> TabLayout<'a> {
-    pub fn new(fd: &'a RawFd, aid: &'a str, parent: Option<i32>) -> Self {
+    pub fn new(fd: &'a RawFd, aid: i32, parent: Option<i32>) -> Self {
         let mut args = json!({ "aid": aid });
 
         if let Some(id) = parent {
@@ -58,7 +58,7 @@ impl<'a> View for TabLayout<'a> {
         self.id
     }
 
-    fn get_aid(&self) -> &str {
+    fn get_aid(&self) -> i32 {
         self.aid
     }
 

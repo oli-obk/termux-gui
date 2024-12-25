@@ -4,14 +4,14 @@ use serde_json::json;
 
 pub struct Label<'a> {
     id: i32,
-    aid: &'a str,
+    aid: i32,
     sock: &'a RawFd,
 }
 
 impl<'a> Label<'a> {
     pub fn new(
         fd: &'a RawFd,
-        aid: &'a str,
+        aid: i32,
         parent: Option<i32>,
         text: &str,
         selectable_text: bool,
@@ -86,14 +86,14 @@ pub trait TextView: View {
     }
 }
 
-impl<'a> TextView for Label<'a> {}
+impl TextView for Label<'_> {}
 
-impl<'a> View for Label<'a> {
+impl View for Label<'_> {
     fn get_id(&self) -> i32 {
         self.id
     }
 
-    fn get_aid(&self) -> &str {
+    fn get_aid(&self) -> i32 {
         self.aid
     }
 

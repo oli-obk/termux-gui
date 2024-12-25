@@ -5,14 +5,14 @@ use serde_json::json;
 
 pub struct EditText<'a> {
     id: i32,
-    aid: &'a str,
+    aid: i32,
     sock: &'a RawFd,
 }
 
 impl<'a> EditText<'a> {
     pub fn new(
         fd: &'a RawFd,
-        aid: &'a str,
+        aid: i32,
         parent: Option<i32>,
         text: &str,
         single_line: bool,
@@ -67,7 +67,7 @@ impl<'a> View for EditText<'a> {
         self.id
     }
 
-    fn get_aid(&self) -> &str {
+    fn get_aid(&self) -> i32 {
         self.aid
     }
 

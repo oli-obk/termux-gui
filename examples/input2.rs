@@ -1,3 +1,4 @@
+use tgui::event::Event;
 use tgui::widgets::{label::TextView, View};
 use tgui::TGui;
 use tgui::AF;
@@ -19,14 +20,12 @@ fn main() {
     let switch = ui.default_switch(Some(&layout), "Switch");
 
     loop {
-        let event = tgui.event().unwrap();
-        if event.ty == tgui::event::DESTROY
-            && event.value["finishing"].to_string().trim().parse().unwrap()
-        {
-            std::process::exit(0);
-        }
-        if event.ty == tgui::event::CLICK && event.id().unwrap() == switch.get_id() {
-            ui.finish();
+        match tgui.event().unwrap() {
+            Event::Destroy {
+                finishing: true, ..
+            } => break,
+            Event::Click { id, .. } if id == switch.get_id() => ui.finish(),
+            _ => {}
         }
     }
 }

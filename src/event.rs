@@ -1,7 +1,6 @@
 use serde::Deserialize;
 use serde_json::Value;
 
-pub const CLICK: &str = "click";
 pub const LONG_CLICK: &str = "longClick";
 pub const FOCUS_CHANGE: &str = "focusChange";
 pub const KEY: &str = "key";
@@ -10,13 +9,6 @@ pub const REFRESH: &str = "refresh";
 pub const SELECTED: &str = "selected";
 pub const ITEM_SELECTED: &str = "itemselected";
 pub const TEXT: &str = "text";
-
-pub const CREATE: &str = "create";
-pub const START: &str = "start";
-pub const RESUME: &str = "resume";
-pub const PAUSE: &str = "pause";
-pub const STOP: &str = "stop";
-pub const DESTROY: &str = "destroy";
 
 pub const USER_LEAVE_HINT: &str = "UserLeaveHint";
 pub const PIP_CHANGED: &str = "pipchanged";
@@ -39,17 +31,43 @@ pub const TOUCH_CANCEL: &str = "cancel";
 pub const TOUCH_MOVE: &str = "move";
 
 #[derive(Debug, Deserialize)]
-pub struct Event {
-    #[serde(rename = "type")]
-    pub ty: String,
-    pub value: Value,
-}
-
-impl Event {
-    pub fn aid(&self) -> Option<&str> {
-        self.value.get("aid")?.as_str()
-    }
-    pub fn id(&self) -> Option<i32> {
-        self.value.get("id")?.as_i64()?.try_into().ok()
-    }
+#[serde(tag = "type", content = "value")]
+#[serde(rename_all = "lowercase")]
+pub enum Event {
+    Click {
+        id: i32,
+        aid: i32,
+        #[serde(default)]
+        set: bool,
+    },
+    Resume {
+        aid: i32,
+        finishing: bool,
+    },
+    Stop {
+        aid: i32,
+        finishing: bool,
+    },
+    Start {
+        aid: i32,
+        finishing: bool,
+    },
+    Create {
+        aid: i32,
+        finishing: bool,
+    },
+    Pause {
+        aid: i32,
+        finishing: bool,
+    },
+    Destroy {
+        aid: i32,
+        finishing: bool,
+    },
+    #[serde(untagged)]
+    Other {
+        #[serde(rename = "type")]
+        ty: String,
+        value: Value,
+    },
 }

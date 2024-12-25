@@ -5,9 +5,10 @@ use serde_json::json;
 pub trait CompoundButton: TextView {
     fn check(&mut self, set: bool);
     fn handle_event(&mut self, e: &Event) {
-        if e.ty == "click" && e.aid().unwrap() == self.get_aid() && e.id().unwrap() == self.get_id()
-        {
-            self.check(e.value["set"].to_string().parse().unwrap());
+        if let &Event::Click { aid, id, set } = e {
+            if aid == self.get_aid() && id == self.get_id() {
+                self.check(set);
+            }
         }
     }
 

@@ -2,13 +2,13 @@ use super::{construct_message, send_recv_msg, RawFd, View, ViewGroup};
 use serde_json::json;
 
 pub struct LinearLayout<'a> {
-    aid: &'a str,
+    aid: i32,
     id: i32,
     sock: &'a RawFd,
 }
 
 impl<'a> LinearLayout<'a> {
-    pub fn new(fd: &'a RawFd, aid: &'a str, parent: Option<i32>, vertical: bool) -> Self {
+    pub fn new(fd: &'a RawFd, aid: i32, parent: Option<i32>, vertical: bool) -> Self {
         let mut args = json!({
             "aid": aid,
             "vertical": vertical
@@ -28,7 +28,7 @@ impl<'a> View for LinearLayout<'a> {
         self.id
     }
 
-    fn get_aid(&self) -> &str {
+    fn get_aid(&self) -> i32 {
         self.aid
     }
 

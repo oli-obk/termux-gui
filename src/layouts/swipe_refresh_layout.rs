@@ -2,13 +2,13 @@ use super::{construct_message, send_recv_msg, RawFd, View, ViewGroup};
 use serde_json::json;
 
 pub struct SwipeRefreshLayout<'a> {
-    aid: &'a str,
+    aid: i32,
     id: i32,
     sock: &'a RawFd,
 }
 
 impl<'a> SwipeRefreshLayout<'a> {
-    pub fn new(fd: &'a RawFd, aid: &'a str, parent: Option<i32>) -> Self {
+    pub fn new(fd: &'a RawFd, aid: i32, parent: Option<i32>) -> Self {
         let mut args = json!({ "aid": aid });
 
         if let Some(id) = parent {
@@ -21,8 +21,8 @@ impl<'a> SwipeRefreshLayout<'a> {
 
     pub fn set_refreshing(&self, refresh: bool) {
         let args = json!({
-            "aid": &self.aid,
-            "id": &self.id,
+            "aid": self.aid,
+            "id": self.id,
             "refresh": refresh
         });
         self.send_msg(construct_message("setRefreshing", &args));
@@ -34,7 +34,7 @@ impl<'a> View for SwipeRefreshLayout<'a> {
         self.id
     }
 
-    fn get_aid(&self) -> &str {
+    fn get_aid(&self) -> i32 {
         self.aid
     }
 

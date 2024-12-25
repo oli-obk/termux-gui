@@ -4,7 +4,7 @@ use serde_json::json;
 
 pub struct Activity {
     pub tid: i32,
-    pub aid: String,
+    pub aid: i32,
 }
 
 impl Activity {
@@ -24,14 +24,7 @@ impl Activity {
 
         let ret = send_recv_msg(main, construct_message("newActivity", &args));
 
-        let aid: Vec<u8> = ret[0]
-            .to_string()
-            .as_bytes()
-            .iter()
-            .map(|&val| val)
-            .filter(|&val| val != b'\"')
-            .collect();
-        let aid = String::from_utf8(aid).unwrap();
+        let aid = ret[0].as_i64().unwrap().try_into().unwrap();
 
         if let None = tid {
             new_tid = ret[1].to_string().parse().unwrap();
