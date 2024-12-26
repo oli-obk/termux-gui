@@ -7,6 +7,14 @@ pub struct Activity {
     pub aid: i32,
 }
 
+/// Behavior when the soft keyboard shows up.
+#[derive(Copy, Clone, serde::Serialize)]
+#[serde(rename = "lowercase")]
+pub enum InputMode {
+    Resize,
+    Pan,
+}
+
 impl Activity {
     pub fn new(main: &RawFd, tid: Option<i32>, flags: AF) -> Self {
         let mut args = json!({
@@ -39,7 +47,7 @@ impl Activity {
         send_msg(main, construct_message("finishActivity", &args));
     }
 
-    pub fn set_input_mode(&self, main: &RawFd, mode: &str) {
+    pub fn set_input_mode(&self, main: &RawFd, mode: InputMode) {
         let args = json!({
             "aid": &self.aid,
             "mode": mode

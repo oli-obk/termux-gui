@@ -1,4 +1,4 @@
-use super::activity::Activity;
+use super::activity::{Activity, InputMode};
 use super::layouts::{
     frame_layout::FrameLayout, horizontal_scroll_view::HorizontalScrollView,
     linear_layout::LinearLayout, nested_scroll_view::NestedScrollView, radio_group::RadioGroup,
@@ -25,6 +25,10 @@ impl<'a> Ui<'a> {
             activity: Activity::new(main, tid, flags),
             main,
         }
+    }
+
+    pub fn set_input_mode(&self, mode: InputMode) {
+        self.activity.set_input_mode(self.main, mode)
     }
 
     pub fn radio_button(&self, parent: Option<&dyn View>, text: &str, check: bool) -> RadioButton {
