@@ -111,10 +111,36 @@ pub fn transmit_buffer(fd: &RawFd, msg: &[u8]) {
 }
 
 pub fn recv_msg(fd: &RawFd) -> Value {
-    try_recv_msg(fd).unwrap_or(Value::Null)
+    serde_json::from_slice(&inner_recv_msg(fd)).unwrap_or(Value::Null)
+}
+
+// Workaround for https://github.com/serde-rs/serde/issues/2200#issuecomment-2563562840
+fn deser<T: for<'a> Deserialize<'a>>(bytes: &[u8]) -> Result<T, serde_json::Error> {
+    let mut value = serde_json::from_slice::<serde_json::Map<String, Value>>(bytes)?;
+    let inner = value
+        .remove("value")
+        .ok_or_else(|| serde::de::Error::missing_field("value"))?;
+    let Value::Object(inner) = inner else {
+        return Err(serde::de::Error::custom("value field is not a map"));
+    };
+    value.extend(inner);
+
+    serde_json::value::from_value(value.into())
 }
 
 pub fn try_recv_msg<T: for<'a> Deserialize<'a>>(fd: &RawFd) -> Result<T, serde_json::Error> {
+    let msg = inner_recv_msg(fd);
+    deser(&msg).map_err(|e| {
+        eprintln!(
+            "error parsing {} from {}",
+            std::any::type_name::<T>(),
+            std::str::from_utf8(&msg).unwrap(),
+        );
+        e
+    })
+}
+
+fn inner_recv_msg(fd: &RawFd) -> Vec<u8> {
     let mut size = [0u8; 4];
     let mut togo = 4usize;
     let mut start = 0;
@@ -136,8 +162,7 @@ pub fn try_recv_msg<T: for<'a> Deserialize<'a>>(fd: &RawFd) -> Result<T, serde_j
         start += ret;
     }
 
-    let msg: Vec<u8> = msg.iter().map(|&v| v).filter(|&val| val != b'\0').collect();
-    serde_json::from_slice(&msg)
+    msg.iter().map(|&v| v).filter(|&val| val != b'\0').collect()
 }
 
 pub fn recv_msg_fd(fd: &RawFd) -> (Value, u8) {

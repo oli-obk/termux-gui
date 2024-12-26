@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use serde_json::Value;
+use serde_json::{Map, Value};
 
 pub const LONG_CLICK: &str = "longClick";
 pub const FOCUS_CHANGE: &str = "focusChange";
@@ -27,53 +27,60 @@ pub const TOUCH_POINTER_DOWN: &str = "pointer_down";
 pub const TOUCH_CANCEL: &str = "cancel";
 pub const TOUCH_MOVE: &str = "move";
 
+/// Events from the OS, not connected to the Activity or the App at all.
 #[derive(Debug, Deserialize)]
-#[serde(tag = "type", content = "value")]
+#[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
-pub enum Event {
+pub enum System {
     ScreenOn,
     ScreenOff,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Activity {
+    Resume,
+    Start,
+    Stop,
+    Destroy,
+    Create,
+    Pause,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(tag = "type")]
+#[serde(rename_all = "snake_case")]
+pub enum Widget {
     Click {
-        id: i32,
-        aid: i32,
         #[serde(default)]
         set: bool,
     },
     Text {
-        id: i32,
-        aid: i32,
-
         text: String,
     },
-    Resume {
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(untagged)]
+#[serde(rename_all = "snake_case")]
+pub enum Event {
+    Widget {
+        id: i32,
+        aid: i32,
+        #[serde(flatten)]
+        kind: Widget,
+    },
+    Activity {
         aid: i32,
         finishing: bool,
+        #[serde(rename = "type")]
+        kind: Activity,
     },
-    Stop {
-        aid: i32,
-        finishing: bool,
-    },
-    Start {
-        aid: i32,
-        finishing: bool,
-    },
-    Create {
-        aid: i32,
-        finishing: bool,
-    },
-    Pause {
-        aid: i32,
-        finishing: bool,
-    },
-    Destroy {
-        aid: i32,
-        finishing: bool,
-    },
-    #[serde(untagged)]
+    System(System),
     Other {
         #[serde(rename = "type")]
         ty: String,
-        #[serde(default)]
-        value: Option<Value>,
+        #[serde(flatten)]
+        value: Map<String, Value>,
     },
 }

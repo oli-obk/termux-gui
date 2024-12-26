@@ -1,4 +1,4 @@
-use tgui::event::Event;
+use tgui::event::{self, Event, Widget::Click};
 use tgui::widgets::{label::TextView, View};
 use tgui::TGui;
 use tgui::AF;
@@ -29,10 +29,16 @@ fn main() {
 
     loop {
         match tgui.event().unwrap() {
-            Event::Destroy {
-                finishing: true, ..
-            } => std::process::exit(0),
-            Event::Click { id, .. } if id == cancel.get_id() => ui.finish(),
+            Event::Activity {
+                kind: event::Activity::Destroy,
+                finishing: true,
+                ..
+            } => break,
+            Event::Widget {
+                id,
+                kind: Click { .. },
+                ..
+            } if id == cancel.get_id() => ui.finish(),
             other => {
                 eprintln!("{other:#?}")
             }

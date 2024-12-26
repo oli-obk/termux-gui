@@ -1,11 +1,16 @@
-use super::Event;
 use super::{construct_message, label::TextView};
+use crate::event::{self, Event};
 use serde_json::json;
 
 pub trait CompoundButton: TextView {
     fn check(&mut self, set: bool);
     fn handle_event(&mut self, e: &Event) {
-        if let &Event::Click { aid, id, set } = e {
+        if let &Event::Widget {
+            aid,
+            id,
+            kind: event::Widget::Click { set },
+        } = e
+        {
             if aid == self.get_aid() && id == self.get_id() {
                 self.check(set);
             }

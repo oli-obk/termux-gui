@@ -1,4 +1,4 @@
-use tgui::event::Event;
+use tgui::event::{self, Event, Widget::Click};
 use tgui::widgets::{label::TextView, View};
 use tgui::TGui;
 use tgui::AF;
@@ -21,10 +21,16 @@ fn main() {
 
     loop {
         match tgui.event().unwrap() {
-            Event::Destroy {
-                finishing: true, ..
+            Event::Activity {
+                kind: event::Activity::Destroy,
+                finishing: true,
+                ..
             } => break,
-            Event::Click { id, .. } if id == switch.get_id() => ui.finish(),
+            Event::Widget {
+                id,
+                kind: Click { .. },
+                ..
+            } if id == switch.get_id() => ui.finish(),
             _ => {}
         }
     }

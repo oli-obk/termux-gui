@@ -1,5 +1,4 @@
 use super::connection::{construct_message, send_msg, send_recv_msg};
-use super::event::Event;
 use super::utils::{Color, Vec2};
 use super::RawFd;
 use serde_json::json;
