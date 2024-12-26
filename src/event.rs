@@ -13,8 +13,6 @@ pub const USER_LEAVE_HINT: &str = "UserLeaveHint";
 pub const PIP_CHANGED: &str = "pipchanged";
 pub const CONFIG: &str = "config";
 
-pub const SCREEN_ON: &str = "screen_on";
-pub const SCREEN_OFF: &str = "screen_off";
 pub const TIMEZONE: &str = "timezone";
 pub const LOCALE: &str = "locale";
 pub const AIRPLANE: &str = "airplane";
@@ -31,8 +29,10 @@ pub const TOUCH_MOVE: &str = "move";
 
 #[derive(Debug, Deserialize)]
 #[serde(tag = "type", content = "value")]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "snake_case")]
 pub enum Event {
+    ScreenOn,
+    ScreenOff,
     Click {
         id: i32,
         aid: i32,
@@ -73,6 +73,7 @@ pub enum Event {
     Other {
         #[serde(rename = "type")]
         ty: String,
-        value: Value,
+        #[serde(default)]
+        value: Option<Value>,
     },
 }
