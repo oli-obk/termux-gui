@@ -1,19 +1,18 @@
 use nix::cmsg_space;
 
-use nix::sys::socket::{recv, recvmsg, send, MsgFlags, RecvMsg, SockaddrStorage};
+use nix::sys::socket::{recvmsg, MsgFlags, RecvMsg, SockaddrStorage};
 
 use serde::Deserialize;
 use serde_json::{json, Value};
 use std::io::Read;
 use std::io::Write;
 use std::os::android::net::SocketAddrExt as _;
-use std::os::fd::IntoRawFd;
-use std::os::unix::io::RawFd;
-use std::os::unix::net::{SocketAddr, UnixListener};
+use std::os::fd::AsRawFd as _;
+use std::os::unix::net::{SocketAddr, UnixListener, UnixStream};
 use std::process::{Command, Stdio};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-pub fn connect() -> (RawFd, RawFd) {
+pub fn connect() -> (UnixStream, UnixStream) {
     static DISAMBIGUATE: AtomicUsize = AtomicUsize::new(0);
     let dis = DISAMBIGUATE.fetch_add(1, Ordering::Relaxed);
     let id = std::process::id();
@@ -49,20 +48,10 @@ pub fn connect() -> (RawFd, RawFd) {
     let mut res = [0u8];
     main.read_exact(&mut res).unwrap();
     assert_eq!(res, [0]);
-    (main.into_raw_fd(), event.into_raw_fd())
+    (main, event)
 }
 
-pub fn transmit_buffer(fd: &RawFd, msg: &[u8]) {
-    let mut len = msg.len();
-    let mut start = 0;
-    while len > 0 {
-        let ret = send(*fd, &msg[start..], MsgFlags::empty()).unwrap();
-        len = len.checked_sub(ret).expect("sent more bytes than we had");
-        start += ret;
-    }
-}
-
-pub fn recv_msg<T: for<'a> Deserialize<'a>>(fd: &RawFd) -> Result<T, serde_json::Error> {
+pub fn recv_msg<T: for<'a> Deserialize<'a>>(fd: &UnixStream) -> Result<T, serde_json::Error> {
     serde_json::from_slice(&inner_recv_msg(fd))
 }
 
@@ -79,7 +68,7 @@ fn deser<T: for<'a> Deserialize<'a>>(bytes: &[u8]) -> Result<T, serde_json::Erro
     serde_json::value::from_value(value.into())
 }
 
-pub fn try_recv_msg<T: for<'a> Deserialize<'a>>(fd: &RawFd) -> Result<T, serde_json::Error> {
+pub fn try_recv_msg<T: for<'a> Deserialize<'a>>(fd: &UnixStream) -> Result<T, serde_json::Error> {
     let msg = inner_recv_msg(fd);
     deser(&msg).map_err(|e| {
         eprintln!(
@@ -91,45 +80,36 @@ pub fn try_recv_msg<T: for<'a> Deserialize<'a>>(fd: &RawFd) -> Result<T, serde_j
     })
 }
 
-fn inner_recv_msg(fd: &RawFd) -> Vec<u8> {
+fn inner_recv_msg(mut fd: &UnixStream) -> Vec<u8> {
     let mut size = [0u8; 4];
-    let mut rem = &mut size[..];
-
-    while !rem.is_empty() {
-        let ret = recv(*fd, &mut rem, MsgFlags::empty()).unwrap();
-        rem = &mut rem[ret..];
-    }
+    fd.read_exact(&mut size).unwrap();
 
     let n = u32::from_be_bytes(size) as usize;
 
     let mut msg = [0u8; 1024 * 64];
-    let mut rem = &mut msg[..n];
-    while !rem.is_empty() {
-        let ret = recv(*fd, &mut rem, MsgFlags::empty()).unwrap();
-        rem = &mut rem[ret..];
-    }
+    fd.read_exact(&mut msg[..n]).unwrap();
     msg[..n].to_vec()
 }
 
-pub fn recv_msg_fd(fd: &RawFd) -> (Value, u8) {
+pub fn recv_msg_fd(mut fd: &UnixStream) -> (Value, u8) {
     let mut size = [0u8; 4];
-    let mut rem = &mut size[..];
-
-    while !rem.is_empty() {
-        let ret = recv(*fd, &mut rem, MsgFlags::empty()).unwrap();
-        rem = &mut rem[ret..];
-    }
+    fd.read_exact(&mut size).unwrap();
 
     let n = u32::from_be_bytes(size) as usize;
 
     let mut msg = [0u8; 1024 * 64];
-    let mut fds = cmsg_space!([RawFd; 2]);
+    let mut fds = cmsg_space!([std::os::fd::RawFd; 2]);
 
     let mut rem = &mut msg[..n];
     while !rem.is_empty() {
         let mut io_mut_buff = [std::io::IoSliceMut::new(rem)];
-        let ret: RecvMsg<SockaddrStorage> =
-            recvmsg(*fd, &mut io_mut_buff, Some(&mut fds), MsgFlags::empty()).unwrap();
+        let ret: RecvMsg<SockaddrStorage> = recvmsg(
+            fd.as_raw_fd(),
+            &mut io_mut_buff,
+            Some(&mut fds),
+            MsgFlags::empty(),
+        )
+        .unwrap();
         rem = &mut rem[ret.bytes..];
     }
 
@@ -139,16 +119,15 @@ pub fn recv_msg_fd(fd: &RawFd) -> (Value, u8) {
     }
 }
 
-pub fn send_msg(fd: &RawFd, msg: Value) {
+pub fn send_msg(mut fd: &UnixStream, msg: Value) {
     let msg = msg.to_string();
     let msg_bytes = msg.as_bytes();
-    let msg_len = u32::to_be_bytes(msg_bytes.len() as u32);
-
-    transmit_buffer(fd, &msg_len);
-    transmit_buffer(fd, &msg_bytes);
+    let msg_len = u32::to_be_bytes(msg_bytes.len().try_into().unwrap());
+    fd.write_all(&msg_len).unwrap();
+    fd.write_all(&msg_bytes).unwrap();
 }
 
-pub fn send_recv_msg<T: for<'a> Deserialize<'a>>(fd: &RawFd, msg: Value) -> T {
+pub fn send_recv_msg<T: for<'a> Deserialize<'a>>(fd: &UnixStream, msg: Value) -> T {
     send_msg(fd, msg);
     recv_msg(fd).unwrap()
 }

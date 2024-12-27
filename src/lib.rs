@@ -1,5 +1,7 @@
 use serde_json::json;
-use std::os::unix::io::RawFd;
+use std::os::unix::net::UnixStream;
+
+type RawFd = UnixStream;
 
 pub mod connection;
 
@@ -23,8 +25,8 @@ bitflags::bitflags! {
 }
 
 pub struct TGui {
-    pub main: RawFd,
-    pub event: RawFd,
+    pub main: UnixStream,
+    pub event: UnixStream,
 }
 
 impl TGui {
