@@ -1,7 +1,7 @@
 use super::compound_button::CompoundButton;
 use super::label::TextView;
 use super::RawFd;
-use super::{construct_message, send_recv_msg, View};
+use super::{send_recv_msg, View};
 use serde_json::json;
 
 pub struct CheckBox<'a> {
@@ -23,7 +23,7 @@ impl<'a> CheckBox<'a> {
             args["parent"] = json!(id);
         }
 
-        let id = send_recv_msg(fd, construct_message("createCheckBox", &args));
+        let id = send_recv_msg(fd, "createCheckBox", args);
 
         CheckBox {
             id,

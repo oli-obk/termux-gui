@@ -42,20 +42,14 @@ impl TGui {
             "text": text,
             "long": long
         });
-        connection::send_msg(&self.main, connection::construct_message("toast", &args));
+        connection::send_msg(&self.main, "toast", args);
     }
 
     pub fn turn_screen_on(&self) {
-        connection::send_msg(
-            &self.main,
-            connection::construct_message("turnScreenOn", &json!(null)),
-        );
+        connection::send_msg(&self.main, "turnScreenOn", ());
     }
 
     pub fn is_locked(&self) -> bool {
-        connection::send_recv_msg(
-            &self.main,
-            connection::construct_message("isLocked", &json!(null)),
-        )
+        connection::send_recv_msg(&self.main, "isLocked", ())
     }
 }

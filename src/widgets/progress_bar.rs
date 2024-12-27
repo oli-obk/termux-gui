@@ -1,5 +1,5 @@
 use super::RawFd;
-use super::{construct_message, send_recv_msg, View};
+use super::{send_recv_msg, View};
 use serde_json::json;
 
 pub struct ProgressBar<'a> {
@@ -18,14 +18,14 @@ impl<'a> ProgressBar<'a> {
             args["parent"] = json!(id);
         }
 
-        let id = send_recv_msg(fd, construct_message("createProgressBar", &args));
+        let id = send_recv_msg(fd, "createProgressBar", args);
 
         ProgressBar { id, aid, sock: fd }
     }
 
     pub fn set_progress(&self, progress: u8) {
         let args = json!({"aid": &self.aid, "id": &self.id, "progress": progress});
-        self.send_msg(construct_message("createProgressBar", &args));
+        self.send_msg("createProgressBar", args);
     }
 }
 

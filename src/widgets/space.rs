@@ -1,5 +1,5 @@
 use super::RawFd;
-use super::{construct_message, send_recv_msg, View};
+use super::{send_recv_msg, View};
 use serde_json::json;
 
 pub struct Space<'a> {
@@ -18,7 +18,7 @@ impl<'a> Space<'a> {
             args["parent"] = json!(id);
         }
 
-        let id = send_recv_msg(fd, construct_message("createSpace", &args));
+        let id = send_recv_msg(fd, "createSpace", args);
 
         Space { id, aid, sock: fd }
     }

@@ -1,6 +1,6 @@
 use super::label::TextView;
 use super::RawFd;
-use super::{construct_message, send_recv_msg, View};
+use super::{send_recv_msg, View};
 use serde_json::json;
 
 pub struct Button<'a> {
@@ -20,7 +20,7 @@ impl<'a> Button<'a> {
             args["parent"] = json!(id);
         }
 
-        let id = send_recv_msg(fd, construct_message("createButton", &args));
+        let id = send_recv_msg(fd, "createButton", args);
 
         Button { id, aid, sock: fd }
     }

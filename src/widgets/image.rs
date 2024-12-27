@@ -1,5 +1,5 @@
 use super::RawFd;
-use super::{construct_message, send_recv_msg, View};
+use super::{send_recv_msg, View};
 use base64::prelude::*;
 use serde_json::json;
 use std::io::Cursor;
@@ -18,7 +18,7 @@ impl<'a> ImageView<'a> {
             args["parent"] = json!(id);
         }
 
-        let id = send_recv_msg(fd, construct_message("createImageView", &args));
+        let id = send_recv_msg(fd, "createImageView", args);
 
         ImageView { id, aid, sock: fd }
     }
@@ -35,7 +35,7 @@ impl<'a> ImageView<'a> {
             "id": self.id,
             "img": res_base64
         });
-        self.send_msg(construct_message("setImage", &args));
+        self.send_msg("setImage", args);
     }
 }
 

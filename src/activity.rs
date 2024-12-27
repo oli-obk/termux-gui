@@ -1,4 +1,4 @@
-use super::connection::{construct_message, send_msg, send_recv_msg};
+use super::connection::{send_msg, send_recv_msg};
 use super::RawFd;
 use serde::Serialize;
 use serde_json::json;
@@ -29,16 +29,16 @@ pub enum InputMode {
 
 impl Activity {
     pub fn new(main: &RawFd, flags: Flags) -> Self {
-        let [aid, tid] = send_recv_msg(main, construct_message("newActivity", &flags));
+        let [aid, tid] = send_recv_msg(main, "newActivity", flags);
 
         Activity { tid, aid }
     }
 
     pub fn finish(&self, main: &RawFd) {
         let args = json!({
-            "aid": &self.aid
+            "aid": self.aid
         });
-        send_msg(main, construct_message("finishActivity", &args));
+        send_msg(main, "finishActivity", args);
     }
 
     pub fn set_input_mode(&self, main: &RawFd, mode: InputMode) {
@@ -47,6 +47,6 @@ impl Activity {
             "mode": mode
         });
 
-        send_msg(main, construct_message("setInputMode", &args));
+        send_msg(main, "setInputMode", args);
     }
 }

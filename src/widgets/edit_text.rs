@@ -1,6 +1,6 @@
 use super::label::TextView;
 use super::RawFd;
-use super::{construct_message, send_recv_msg, View};
+use super::{send_recv_msg, View};
 use serde_json::json;
 
 pub struct EditText<'a> {
@@ -33,7 +33,7 @@ impl<'a> EditText<'a> {
             args["parent"] = json!(id);
         }
 
-        let id = send_recv_msg(fd, construct_message("createEditText", &args));
+        let id = send_recv_msg(fd, "createEditText", args);
 
         EditText { id, aid, sock: fd }
     }
@@ -45,7 +45,7 @@ impl<'a> EditText<'a> {
             "show": show
 
         });
-        self.send_msg(construct_message("showCursor", &args));
+        self.send_msg("showCursor", args);
     }
 
     /// Whether to send events for when text changes
@@ -56,7 +56,7 @@ impl<'a> EditText<'a> {
             "send": send
 
         });
-        self.send_msg(construct_message("sendTextEvent", &args));
+        self.send_msg("sendTextEvent", args);
     }
 }
 

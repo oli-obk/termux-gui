@@ -1,5 +1,5 @@
 use super::RawFd;
-use super::{construct_message, send_recv_msg, Color, View};
+use super::{send_recv_msg, Color, View};
 use serde_json::json;
 
 pub struct Label<'a> {
@@ -28,13 +28,13 @@ impl<'a> Label<'a> {
             args["parent"] = json!(id);
         }
 
-        let id = send_recv_msg(fd, construct_message("createTextView", &args));
+        let id = send_recv_msg(fd, "createTextView", args);
 
         Label { id, aid, sock: fd }
     }
 }
 
-pub trait TextView: View {
+pub trait TextView: View + Sized {
     fn set_text_size(&self, size: u8) {
         let args = json!({
             "aid": self.get_aid(),
@@ -42,7 +42,7 @@ pub trait TextView: View {
             "size": size
         });
 
-        self.send_msg(construct_message("setTextSize", &args));
+        self.send_msg("setTextSize", args);
     }
 
     fn set_text(&self, text: &str) {
@@ -52,7 +52,7 @@ pub trait TextView: View {
             "text": text
         });
 
-        self.send_msg(construct_message("setText", &args));
+        self.send_msg("setText", args);
     }
 
     fn get_text(&self) -> String {
@@ -61,8 +61,7 @@ pub trait TextView: View {
             "id": self.get_id()
         });
 
-        self.send_recv_msg(construct_message("getText", &args))
-            .to_string()
+        self.send_recv_msg("getText", args).to_string()
     }
 
     fn set_text_color(&self, color: Color) {
@@ -72,7 +71,7 @@ pub trait TextView: View {
             "color": color.to_u32()
         });
 
-        self.send_msg(construct_message("setTextColor", &args));
+        self.send_msg("setTextColor", args);
     }
 
     fn set_text_event(&self, send: bool) {
@@ -82,7 +81,7 @@ pub trait TextView: View {
             "send": send
         });
 
-        self.send_msg(construct_message("setTextEvent", &args));
+        self.send_msg("setTextEvent", args);
     }
 }
 

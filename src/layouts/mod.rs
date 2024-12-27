@@ -1,4 +1,4 @@
-use super::connection::{construct_message, send_recv_msg};
+use super::connection::send_recv_msg;
 use super::utils::Vec2;
 use super::{RawFd, View};
 use serde_json::json;
@@ -11,13 +11,13 @@ pub mod radio_group;
 pub mod swipe_refresh_layout;
 pub mod tab_layout;
 
-pub trait ViewGroup: View {
+pub trait ViewGroup: View + Sized {
     fn clear_children(&self) {
         let args = json!({
             "aid": self.get_aid(),
             "id": self.get_id()
         });
 
-        self.send_msg(construct_message("deleteChildren", &args));
+        self.send_msg("deleteChildren", args);
     }
 }

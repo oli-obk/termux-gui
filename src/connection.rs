@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::Value;
 use std::io::Read;
 use std::io::Write;
 use std::os::android::net::SocketAddrExt as _;
@@ -116,19 +116,24 @@ pub fn recv_msg_fd(mut fd: &UnixStream) -> (Vec<u8>, [rustix::fd::OwnedFd; 2]) {
     (msg, std::array::from_fn(|_| fds.next().unwrap()))
 }
 
-pub fn send_msg(mut fd: &UnixStream, msg: Value) {
-    let msg = msg.to_string();
-    let msg_bytes = msg.as_bytes();
+#[derive(Serialize)]
+struct Message<'a, T: Serialize> {
+    method: &'a str,
+    params: T,
+}
+
+pub fn send_msg(mut fd: &UnixStream, method: &str, params: impl Serialize) {
+    let msg_bytes = serde_json::to_vec(&Message { method, params }).unwrap();
     let msg_len = u32::to_be_bytes(msg_bytes.len().try_into().unwrap());
     fd.write_all(&msg_len).unwrap();
     fd.write_all(&msg_bytes).unwrap();
 }
 
-pub fn send_recv_msg<T: for<'a> Deserialize<'a>>(fd: &UnixStream, msg: Value) -> T {
-    send_msg(fd, msg);
+pub fn send_recv_msg<T: for<'a> Deserialize<'a>>(
+    fd: &UnixStream,
+    method: &str,
+    params: impl Serialize,
+) -> T {
+    send_msg(fd, method, params);
     recv_msg(fd).unwrap()
-}
-
-pub fn construct_message(method: &str, args: &impl Serialize) -> Value {
-    json!({"method": method, "params": args})
 }

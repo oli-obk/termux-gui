@@ -1,4 +1,4 @@
-use super::{construct_message, label::TextView};
+use super::label::TextView;
 use crate::event::{self, Event};
 use serde_json::json;
 
@@ -24,6 +24,6 @@ pub trait CompoundButton: TextView {
             "id": self.get_id(),
             "checked": set
         });
-        self.send_msg(construct_message("setChecked", &args));
+        self.send_msg("setChecked", args);
     }
 }

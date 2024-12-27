@@ -1,5 +1,5 @@
 use super::Vec2;
-use super::{construct_message, send_recv_msg, RawFd, View, ViewGroup};
+use super::{send_recv_msg, RawFd, View, ViewGroup};
 use serde_json::json;
 
 pub struct HorizontalScrollView<'a> {
@@ -22,7 +22,7 @@ impl<'a> HorizontalScrollView<'a> {
         if let Some(id) = parent {
             args["parent"] = json!(id);
         }
-        let id = send_recv_msg(fd, construct_message("createHorizontalScrollView", &args));
+        let id = send_recv_msg(fd, "createHorizontalScrollView", args);
 
         HorizontalScrollView { id, aid, sock: fd }
     }
@@ -35,7 +35,7 @@ impl<'a> HorizontalScrollView<'a> {
            "y": pos.y,
            "soft": smooth
         });
-        self.send_msg(construct_message("setScrollPosition", &args));
+        self.send_msg("setScrollPosition", args);
     }
 
     pub fn get_scroll_position(&self) -> Vec2<u16> {
@@ -43,7 +43,7 @@ impl<'a> HorizontalScrollView<'a> {
            "aid": &self.aid,
            "id": &self.id
         });
-        let ret = self.send_recv_msg(construct_message("getScrollPosition", &args));
+        let ret = self.send_recv_msg("getScrollPosition", args);
         let x: u16 = ret["x"].to_string().parse().unwrap();
         let y: u16 = ret["y"].to_string().parse().unwrap();
         Vec2 { x, y }

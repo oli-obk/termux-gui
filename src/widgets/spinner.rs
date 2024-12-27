@@ -1,4 +1,4 @@
-use super::{construct_message, send_recv_msg, RawFd, View};
+use super::{send_recv_msg, RawFd, View};
 use serde_json::json;
 
 pub struct Spinner<'a> {
@@ -14,7 +14,7 @@ impl<'a> Spinner<'a> {
         if let Some(id) = parent {
             args["parent"] = json!(id);
         }
-        let id = send_recv_msg(fd, construct_message("createSpinner", &args));
+        let id = send_recv_msg(fd, "createSpinner", &args);
 
         Spinner { id, aid, sock: fd }
     }
@@ -26,7 +26,7 @@ impl<'a> Spinner<'a> {
             "list": list
         });
 
-        self.send_msg(construct_message("setList", &args));
+        self.send_msg("setList", args);
     }
 }
 

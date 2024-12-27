@@ -1,7 +1,7 @@
 use super::compound_button::CompoundButton;
 use super::label::TextView;
 use super::RawFd;
-use super::{construct_message, send_recv_msg, View};
+use super::{send_recv_msg, View};
 use serde_json::json;
 
 pub struct ToggleButton<'a> {
@@ -23,7 +23,7 @@ impl<'a> ToggleButton<'a> {
             args["parent"] = json!(id);
         }
 
-        let id = send_recv_msg(fd, construct_message("createToggleButton", &args));
+        let id = send_recv_msg(fd, "createToggleButton", args);
         ToggleButton {
             id,
             aid,

@@ -1,4 +1,4 @@
-use super::{construct_message, send_recv_msg, RawFd, View, ViewGroup};
+use super::{send_recv_msg, RawFd, View, ViewGroup};
 use serde_json::json;
 
 pub struct FrameLayout<'a> {
@@ -14,7 +14,7 @@ impl<'a> FrameLayout<'a> {
         if let Some(id) = parent {
             args["parent"] = json!(id);
         }
-        let id = send_recv_msg(fd, construct_message("createFrameLayout", &args));
+        let id = send_recv_msg(fd, "createFrameLayout", args);
 
         FrameLayout { id, aid, sock: fd }
     }

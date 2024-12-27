@@ -1,7 +1,7 @@
 use super::compound_button::CompoundButton;
 use super::label::TextView;
 use super::RawFd;
-use super::{construct_message, send_recv_msg, View};
+use super::{send_recv_msg, View};
 use serde_json::json;
 
 pub struct RadioButton<'a> {
@@ -23,7 +23,7 @@ impl<'a> RadioButton<'a> {
             args["parent"] = json!(id);
         }
 
-        let id = send_recv_msg(fd, construct_message("createRadioButton", &args));
+        let id = send_recv_msg(fd, "createRadioButton", args);
 
         RadioButton {
             id,

@@ -1,4 +1,4 @@
-use super::{construct_message, send_recv_msg, RawFd, View, ViewGroup};
+use super::{send_recv_msg, RawFd, View, ViewGroup};
 use serde_json::json;
 
 pub struct LinearLayout<'a> {
@@ -17,7 +17,7 @@ impl<'a> LinearLayout<'a> {
         if let Some(id) = parent {
             args["parent"] = json!(id);
         }
-        let id = send_recv_msg(fd, construct_message("createLinearLayout", &args));
+        let id = send_recv_msg(fd, "createLinearLayout", args);
 
         LinearLayout { id, aid, sock: fd }
     }

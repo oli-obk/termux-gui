@@ -1,4 +1,4 @@
-use super::{construct_message, send_recv_msg, RawFd, View, ViewGroup};
+use super::{send_recv_msg, RawFd, View, ViewGroup};
 use serde_json::json;
 
 pub struct RadioGroup<'a> {
@@ -14,7 +14,7 @@ impl<'a> RadioGroup<'a> {
         if let Some(id) = parent {
             args["parent"] = json!(id);
         }
-        let id = send_recv_msg(fd, construct_message("createRadioGroup", &args));
+        let id = send_recv_msg(fd, "createRadioGroup", args);
 
         RadioGroup { id, aid, sock: fd }
     }
