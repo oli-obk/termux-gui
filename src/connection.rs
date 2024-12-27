@@ -162,29 +162,27 @@ fn inner_recv_msg(fd: &RawFd) -> Vec<u8> {
 
 pub fn recv_msg_fd(fd: &RawFd) -> (Value, u8) {
     let mut size = [0u8; 4];
-    let mut togo = 4usize;
-    let mut start = 0;
+    let mut rem = &mut size[..];
 
-    while togo > 0 {
-        let ret = recv(*fd, &mut size[start..], MsgFlags::empty()).unwrap();
-        togo = togo.saturating_sub(ret);
-        start += ret;
+    while !rem.is_empty() {
+        let ret = recv(*fd, &mut rem, MsgFlags::empty()).unwrap();
+        rem = &mut rem[ret..];
     }
 
-    togo = u32::from_be_bytes(size) as usize;
+    let n = u32::from_be_bytes(size) as usize;
+
     let mut msg = [0u8; 1024 * 64];
     let mut fds = cmsg_space!([RawFd; 2]);
-    while togo > 0 {
-        let mut io_mut_buff = [std::io::IoSliceMut::new(&mut msg[start..])];
+
+    let mut rem = &mut msg[..n];
+    while !rem.is_empty() {
+        let mut io_mut_buff = [std::io::IoSliceMut::new(rem)];
         let ret: RecvMsg<SockaddrStorage> =
             recvmsg(*fd, &mut io_mut_buff, Some(&mut fds), MsgFlags::empty()).unwrap();
-        let ret = ret.bytes;
-        togo = togo.saturating_sub(ret);
-        start += ret;
+        rem = &mut rem[ret.bytes..];
     }
 
-    let msg: Vec<u8> = msg.iter().map(|&v| v).filter(|&val| val != b'\0').collect();
-    match serde_json::from_slice(&msg) {
+    match serde_json::from_slice(&msg[..n]) {
         Ok(val) => (val, fds[0]),
         Err(_) => (json!(null), fds[0]),
     }
