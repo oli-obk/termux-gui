@@ -31,8 +31,6 @@ impl<'a> ImageView<'a> {
             .unwrap();
         let res_base64 = BASE64_STANDARD.encode(&buff);
         let args = json!({
-            "aid": &self.aid,
-            "id": self.id,
             "img": res_base64
         });
         self.send_msg("setImage", args);

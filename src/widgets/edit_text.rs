@@ -40,23 +40,9 @@ impl<'a> EditText<'a> {
 
     pub fn show_cursor(&self, show: bool) {
         let args = json!({
-            "aid": &self.aid,
-            "id": self.id,
             "show": show
-
         });
         self.send_msg("showCursor", args);
-    }
-
-    /// Whether to send events for when text changes
-    pub fn send_events(&self, send: bool) {
-        let args = json!({
-            "aid": &self.aid,
-            "id": self.id,
-            "send": send
-
-        });
-        self.send_msg("sendTextEvent", args);
     }
 }
 

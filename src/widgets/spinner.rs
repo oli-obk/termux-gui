@@ -21,8 +21,6 @@ impl<'a> Spinner<'a> {
 
     pub fn set_list(&self, list: &[&str]) {
         let args = json!({
-            "aid": &self.aid,
-            "id": &self.id,
             "list": list
         });
 

@@ -18,6 +18,14 @@ pub mod spinner;
 pub mod switch;
 pub mod toggle_button;
 
+#[derive(Serialize)]
+struct WithIds<T: Serialize> {
+    id: i32,
+    aid: i32,
+    #[serde(flatten)]
+    params: T,
+}
+
 pub trait View {
     fn get_id(&self) -> i32;
     fn get_aid(&self) -> i32;
@@ -27,24 +35,36 @@ pub trait View {
     where
         Self: Sized,
     {
-        send_recv_msg(self.get_sock(), method, params)
+        send_recv_msg(
+            self.get_sock(),
+            method,
+            WithIds {
+                params,
+                id: self.get_id(),
+                aid: self.get_aid(),
+            },
+        )
     }
     fn send_msg(&self, method: &str, params: impl Serialize)
     where
         Self: Sized,
     {
-        send_msg(self.get_sock(), method, params);
+        send_msg(
+            self.get_sock(),
+            method,
+            WithIds {
+                params,
+                id: self.get_id(),
+                aid: self.get_aid(),
+            },
+        );
     }
 
     fn delete(&self)
     where
         Self: Sized,
     {
-        let args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id()
-        });
-        self.send_msg("deleteView", args);
+        self.send_msg("deleteView", ());
     }
 
     fn set_margin(&self, margin: i32, dir: Option<&str>)
@@ -52,8 +72,6 @@ pub trait View {
         Self: Sized,
     {
         let mut args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id(),
             "margin": margin
         });
 
@@ -69,8 +87,6 @@ pub trait View {
         Self: Sized,
     {
         let args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id(),
             "width": width,
             "px": px
         });
@@ -83,8 +99,6 @@ pub trait View {
         Self: Sized,
     {
         let args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id(),
             "height": height,
             "px": px
         });
@@ -105,8 +119,6 @@ pub trait View {
         Self: Sized,
     {
         let args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id(),
             "weight": weight
         });
 
@@ -118,8 +130,6 @@ pub trait View {
         Self: Sized,
     {
         let args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id(),
             "send": send
         });
 
@@ -131,8 +141,6 @@ pub trait View {
         Self: Sized,
     {
         let args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id(),
             "send": send
         });
 
@@ -144,8 +152,6 @@ pub trait View {
         Self: Sized,
     {
         let args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id(),
             "send": send
         });
 
@@ -157,8 +163,6 @@ pub trait View {
         Self: Sized,
     {
         let args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id(),
             "send": send
         });
 
@@ -169,12 +173,7 @@ pub trait View {
     where
         Self: Sized,
     {
-        let args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id()
-        });
-
-        let ret = self.send_recv_msg("getDimensions", args);
+        let ret = self.send_recv_msg("getDimensions", ());
         Vec2 {
             x: ret[0].to_string().parse().unwrap(),
             y: ret[1].to_string().parse().unwrap(),
@@ -186,8 +185,6 @@ pub trait View {
         Self: Sized,
     {
         let args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id(),
             "color": color.to_u32()
         });
 
@@ -199,8 +196,6 @@ pub trait View {
         Self: Sized,
     {
         let args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id(),
             "vis": vis
         });
 
@@ -212,8 +207,6 @@ pub trait View {
         Self: Sized,
     {
         let args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id(),
             "forceSoft": force_soft
         });
 

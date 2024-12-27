@@ -21,8 +21,6 @@ impl<'a> SwipeRefreshLayout<'a> {
 
     pub fn set_refreshing(&self, refresh: bool) {
         let args = json!({
-            "aid": self.aid,
-            "id": self.id,
             "refresh": refresh
         });
         self.send_msg("setRefreshing", args);

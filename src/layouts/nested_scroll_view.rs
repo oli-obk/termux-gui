@@ -29,8 +29,6 @@ impl<'a> NestedScrollView<'a> {
 
     pub fn set_scroll_position(&self, pos: Vec2<u16>, smooth: bool) {
         let args = json!({
-           "aid": &self.aid,
-           "id": &self.id,
            "x": pos.x,
            "y": pos.y,
            "soft": smooth
@@ -39,11 +37,7 @@ impl<'a> NestedScrollView<'a> {
     }
 
     pub fn get_scroll_position(&self) -> Vec2<u16> {
-        let args = json!({
-           "aid": &self.aid,
-           "id": &self.id
-        });
-        let ret = self.send_recv_msg("getScrollPosition", args);
+        let ret = self.send_recv_msg("getScrollPosition", ());
         let x: u16 = ret["x"].to_string().parse().unwrap();
         let y: u16 = ret["y"].to_string().parse().unwrap();
         Vec2 { x, y }

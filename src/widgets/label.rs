@@ -37,8 +37,6 @@ impl<'a> Label<'a> {
 pub trait TextView: View + Sized {
     fn set_text_size(&self, size: u8) {
         let args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id(),
             "size": size
         });
 
@@ -47,8 +45,6 @@ pub trait TextView: View + Sized {
 
     fn set_text(&self, text: &str) {
         let args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id(),
             "text": text
         });
 
@@ -56,18 +52,11 @@ pub trait TextView: View + Sized {
     }
 
     fn get_text(&self) -> String {
-        let args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id()
-        });
-
-        self.send_recv_msg("getText", args).to_string()
+        self.send_recv_msg("getText", ()).to_string()
     }
 
     fn set_text_color(&self, color: Color) {
         let args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id(),
             "color": color.to_u32()
         });
 
@@ -76,12 +65,10 @@ pub trait TextView: View + Sized {
 
     fn set_text_event(&self, send: bool) {
         let args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id(),
             "send": send
         });
 
-        self.send_msg("setTextEvent", args);
+        self.send_msg("sendTextEvent", args);
     }
 }
 

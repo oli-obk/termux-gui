@@ -20,8 +20,6 @@ pub trait CompoundButton: TextView {
     fn set_checked(&mut self, set: bool) {
         self.check(set);
         let args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id(),
             "checked": set
         });
         self.send_msg("setChecked", args);

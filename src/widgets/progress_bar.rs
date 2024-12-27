@@ -24,7 +24,7 @@ impl<'a> ProgressBar<'a> {
     }
 
     pub fn set_progress(&self, progress: u8) {
-        let args = json!({"aid": &self.aid, "id": &self.id, "progress": progress});
+        let args = json!({"progress": progress});
         self.send_msg("createProgressBar", args);
     }
 }

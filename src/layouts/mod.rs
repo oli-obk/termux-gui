@@ -1,7 +1,6 @@
 use super::connection::send_recv_msg;
 use super::utils::Vec2;
 use super::{RawFd, View};
-use serde_json::json;
 
 pub mod frame_layout;
 pub mod horizontal_scroll_view;
@@ -13,11 +12,6 @@ pub mod tab_layout;
 
 pub trait ViewGroup: View + Sized {
     fn clear_children(&self) {
-        let args = json!({
-            "aid": self.get_aid(),
-            "id": self.get_id()
-        });
-
-        self.send_msg("deleteChildren", args);
+        self.send_msg("deleteChildren", ());
     }
 }
