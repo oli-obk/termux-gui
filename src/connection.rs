@@ -84,11 +84,13 @@ fn inner_recv_msg(mut fd: &UnixStream) -> Vec<u8> {
     let mut size = [0u8; 4];
     fd.read_exact(&mut size).unwrap();
 
-    let n = u32::from_be_bytes(size) as usize;
+    let n = u32::from_be_bytes(size);
 
-    let mut msg = [0u8; 1024 * 64];
-    fd.read_exact(&mut msg[..n]).unwrap();
-    msg[..n].to_vec()
+    let mut msg = Vec::with_capacity(n.try_into().unwrap());
+    fd.take(n.try_into().unwrap())
+        .read_to_end(&mut msg)
+        .unwrap();
+    msg
 }
 
 pub fn recv_msg_fd(mut fd: &UnixStream) -> (Value, u8) {
