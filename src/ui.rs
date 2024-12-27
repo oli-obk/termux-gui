@@ -12,7 +12,6 @@ use super::widgets::{
     switch::Switch, toggle_button::ToggleButton, View,
 };
 use super::RawFd;
-use super::AF;
 
 pub struct Ui<'a> {
     activity: Activity,
@@ -20,9 +19,9 @@ pub struct Ui<'a> {
 }
 
 impl<'a> Ui<'a> {
-    pub fn new(main: &'a RawFd, tid: Option<i32>, flags: AF) -> Self {
+    pub fn new(main: &'a RawFd, flags: crate::activity::Flags) -> Self {
         Ui {
-            activity: Activity::new(main, tid, flags),
+            activity: Activity::new(main, flags),
             main,
         }
     }

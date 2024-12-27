@@ -14,16 +14,6 @@ pub mod widgets;
 
 use widgets::View;
 
-bitflags::bitflags! {
-    pub struct AF: u8{
-        const DIALOG = 0b0000_0001;
-        const PIP = 0b0000_0010;
-        const CANCEL_OUTSIDE = 0b0000_0100;
-        const LOCK_SCREEN = 0b0000_1000;
-        const OVERLAY = 0b0001_0000;
-    }
-}
-
 pub struct TGui {
     pub main: UnixStream,
     pub event: UnixStream,
@@ -35,12 +25,12 @@ impl TGui {
         TGui { main, event }
     }
 
-    pub fn activity(&self, tid: Option<i32>, flags: AF) -> activity::Activity {
-        activity::Activity::new(&self.main, tid, flags)
+    pub fn activity(&self, flags: activity::Flags) -> activity::Activity {
+        activity::Activity::new(&self.main, flags)
     }
 
-    pub fn ui(&self, tid: Option<i32>, flags: AF) -> ui::Ui {
-        ui::Ui::new(&self.main, tid, flags)
+    pub fn ui(&self, flags: activity::Flags) -> ui::Ui {
+        ui::Ui::new(&self.main, flags)
     }
 
     pub fn event(&self) -> Result<event::Event, serde_json::Error> {

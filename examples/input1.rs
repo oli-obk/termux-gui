@@ -1,15 +1,16 @@
 use tgui::event::{self, Event, Widget::Click};
 use tgui::widgets::{label::TextView, View};
 use tgui::TGui;
-use tgui::AF;
 
 fn main() {
     let tgui = TGui::new();
-    let mut flags = AF::empty();
-    flags.set(AF::DIALOG, true);
-    flags.set(AF::CANCEL_OUTSIDE, true);
+    let flags = tgui::activity::Flags {
+        dialog: true,
+        cancel_outside: true,
+        ..Default::default()
+    };
 
-    let ui = tgui.ui(None, flags);
+    let ui = tgui.ui(flags);
     let layout = ui.linear_layout(None, true);
 
     let title = ui.label(Some(&layout), "Download Video", false, false);

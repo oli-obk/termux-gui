@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::io::Read;
 use std::io::Write;
@@ -129,6 +129,6 @@ pub fn send_recv_msg<T: for<'a> Deserialize<'a>>(fd: &UnixStream, msg: Value) ->
     recv_msg(fd).unwrap()
 }
 
-pub fn construct_message(method: &str, args: &Value) -> Value {
+pub fn construct_message(method: &str, args: &impl Serialize) -> Value {
     json!({"method": method, "params": args})
 }
