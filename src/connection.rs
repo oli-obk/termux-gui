@@ -142,24 +142,20 @@ pub fn try_recv_msg<T: for<'a> Deserialize<'a>>(fd: &RawFd) -> Result<T, serde_j
 
 fn inner_recv_msg(fd: &RawFd) -> Vec<u8> {
     let mut size = [0u8; 4];
-    let mut togo = 4usize;
-    let mut start = 0;
+    let mut rem = &mut size[..];
 
-    while togo > 0 {
-        let ret = recv(*fd, &mut size[start..], MsgFlags::empty()).unwrap();
-        togo = togo.checked_sub(ret).unwrap();
-        start += ret;
+    while !rem.is_empty() {
+        let ret = recv(*fd, &mut rem, MsgFlags::empty()).unwrap();
+        rem = &mut rem[ret..];
     }
 
     let n = u32::from_be_bytes(size) as usize;
-    togo = n;
-    start = 0;
 
     let mut msg = [0u8; 1024 * 64];
-    while togo > 0 {
-        let ret = recv(*fd, &mut msg[start..n], MsgFlags::empty()).unwrap();
-        togo = togo.checked_sub(ret).unwrap();
-        start += ret;
+    let mut rem = &mut msg[..n];
+    while !rem.is_empty() {
+        let ret = recv(*fd, &mut rem, MsgFlags::empty()).unwrap();
+        rem = &mut rem[ret..];
     }
     msg[..n].to_vec()
 }
