@@ -1,18 +1,17 @@
 use nix::cmsg_space;
 
-use nix::sys::socket::{
-    accept, bind, listen, recv, recvmsg, send, socket, AddressFamily, MsgFlags, RecvMsg, SockFlag,
-    SockType, SockaddrStorage, UnixAddr,
-};
-
-use nix::errno::Errno;
-
-use std::os::unix::io::RawFd;
-use std::process::{Command, Stdio};
-use std::sync::atomic::{AtomicUsize, Ordering};
+use nix::sys::socket::{recv, recvmsg, send, MsgFlags, RecvMsg, SockaddrStorage};
 
 use serde::Deserialize;
 use serde_json::{json, Value};
+use std::io::Read;
+use std::io::Write;
+use std::os::android::net::SocketAddrExt as _;
+use std::os::fd::IntoRawFd;
+use std::os::unix::io::RawFd;
+use std::os::unix::net::{SocketAddr, UnixListener};
+use std::process::{Command, Stdio};
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 pub fn connect() -> (RawFd, RawFd) {
     static DISAMBIGUATE: AtomicUsize = AtomicUsize::new(0);
@@ -20,57 +19,11 @@ pub fn connect() -> (RawFd, RawFd) {
     let id = std::process::id();
     let main_addr = format!("rust/tgui/{id}/{dis}/main");
     let event_addr = format!("rust/tgui/{id}/{dis}/event");
-    let main_sock_addr = UnixAddr::new_abstract(&main_addr.as_bytes()).unwrap();
-    let event_sock_addr = UnixAddr::new_abstract(&event_addr.as_bytes()).unwrap();
+    let main_sock_addr = SocketAddr::from_abstract_name(&main_addr).unwrap();
+    let event_sock_addr = SocketAddr::from_abstract_name(&event_addr).unwrap();
 
-    let main_sock = socket(
-        AddressFamily::Unix,
-        SockType::Stream,
-        SockFlag::empty(),
-        None,
-    )
-    .unwrap();
-
-    let event_sock = socket(
-        AddressFamily::Unix,
-        SockType::Stream,
-        SockFlag::empty(),
-        None,
-    )
-    .unwrap();
-
-    //TODO: Handle Error
-    for i in 0..=10 {
-        if i == 10 {
-            println!("Error Establishing connection with socket");
-        }
-        match bind(main_sock, &main_sock_addr) {
-            Ok(_) => break,
-            Err(err) => {
-                if let Errno::EBADF | Errno::EINVAL | Errno::ENOTSOCK = err {
-                    panic!("Failed creating main Socket");
-                }
-            }
-        }
-    }
-
-    for i in 0..=10 {
-        if i == 10 {
-            println!("Error Establishing connection with socket");
-        }
-
-        match bind(event_sock, &event_sock_addr) {
-            Ok(_) => break,
-            Err(err) => {
-                if let Errno::EBADF | Errno::EINVAL | Errno::ENOTSOCK = err {
-                    panic!("Failed creating event Socket");
-                }
-            }
-        }
-    }
-
-    listen(main_sock, 1).unwrap();
-    listen(event_sock, 1).unwrap();
+    let main_sock = UnixListener::bind_addr(&main_sock_addr).unwrap();
+    let event_sock = UnixListener::bind_addr(&event_sock_addr).unwrap();
 
     Command::new("am")
         .stdout(Stdio::null())
@@ -89,15 +42,14 @@ pub fn connect() -> (RawFd, RawFd) {
         .output()
         .unwrap();
 
-    let main = accept(main_sock).unwrap();
-    let event = accept(event_sock).unwrap();
+    let (mut main, _addr) = main_sock.accept().unwrap();
+    let (event, _addr) = event_sock.accept().unwrap();
 
-    let protocol = [1u8];
-    while send(main, &protocol, MsgFlags::empty()).unwrap() == 0 {}
+    main.write_all(&[1]).unwrap();
     let mut res = [0u8];
-    while recv(main, &mut res, MsgFlags::empty()).unwrap() == 0 {}
+    main.read_exact(&mut res).unwrap();
     assert_eq!(res, [0]);
-    (main, event)
+    (main.into_raw_fd(), event.into_raw_fd())
 }
 
 pub fn transmit_buffer(fd: &RawFd, msg: &[u8]) {
