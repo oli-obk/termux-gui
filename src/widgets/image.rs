@@ -17,8 +17,8 @@ impl<'a> ImageView<'a> {
             args["parent"] = json!(id);
         }
 
-        let ret = send_recv_msg(fd, construct_message("createImageView", &args));
-        let id: i32 = ret.to_string().parse().unwrap();
+        let id = send_recv_msg(fd, construct_message("createImageView", &args));
+
         ImageView { id, aid, sock: fd }
     }
 
