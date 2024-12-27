@@ -1,13 +1,8 @@
-use nix::cmsg_space;
-
-use nix::sys::socket::{recvmsg, MsgFlags, RecvMsg, SockaddrStorage};
-
 use serde::Deserialize;
 use serde_json::{json, Value};
 use std::io::Read;
 use std::io::Write;
 use std::os::android::net::SocketAddrExt as _;
-use std::os::fd::AsRawFd as _;
 use std::os::unix::net::{SocketAddr, UnixListener, UnixStream};
 use std::process::{Command, Stdio};
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -93,32 +88,32 @@ fn inner_recv_msg(mut fd: &UnixStream) -> Vec<u8> {
     msg
 }
 
-pub fn recv_msg_fd(mut fd: &UnixStream) -> (Value, u8) {
+#[cfg(feature = "buf")]
+pub fn recv_msg_fd(mut fd: &UnixStream) -> (Vec<u8>, [rustix::fd::OwnedFd; 2]) {
     let mut size = [0u8; 4];
     fd.read_exact(&mut size).unwrap();
 
-    let n = u32::from_be_bytes(size) as usize;
+    let n = u32::from_be_bytes(size).try_into().unwrap();
 
-    let mut msg = [0u8; 1024 * 64];
-    let mut fds = cmsg_space!([std::os::fd::RawFd; 2]);
+    let mut msg = vec![0; n];
+    let mut space = [0; rustix::cmsg_space!(ScmRights(2))];
+    let mut fds = rustix::net::RecvAncillaryBuffer::new(&mut space);
 
     let mut rem = &mut msg[..n];
     while !rem.is_empty() {
-        let mut io_mut_buff = [std::io::IoSliceMut::new(rem)];
-        let ret: RecvMsg<SockaddrStorage> = recvmsg(
-            fd.as_raw_fd(),
-            &mut io_mut_buff,
-            Some(&mut fds),
-            MsgFlags::empty(),
+        let ret = rustix::net::recvmsg(
+            fd,
+            &mut [rustix::io::IoSliceMut::new(rem)],
+            &mut fds,
+            rustix::net::RecvFlags::empty(),
         )
         .unwrap();
         rem = &mut rem[ret.bytes..];
     }
-
-    match serde_json::from_slice(&msg[..n]) {
-        Ok(val) => (val, fds[0]),
-        Err(_) => (json!(null), fds[0]),
-    }
+    let rustix::net::RecvAncillaryMessage::ScmRights(mut fds) = fds.drain().next().unwrap() else {
+        unreachable!()
+    };
+    (msg, std::array::from_fn(|_| fds.next().unwrap()))
 }
 
 pub fn send_msg(mut fd: &UnixStream, msg: Value) {
