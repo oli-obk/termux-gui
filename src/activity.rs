@@ -24,20 +24,14 @@ impl Activity {
             "canceloutside": flags.contains(AF::CANCEL_OUTSIDE),
             "overlay": flags.contains(AF::OVERLAY)
         });
-        let mut new_tid = 0i32;
+
         if let Some(val) = tid {
             args["tid"] = json!(val);
-            new_tid = val;
         }
 
-        let ret = send_recv_msg(main, construct_message("newActivity", &args));
+        let [aid, tid] = send_recv_msg(main, construct_message("newActivity", &args));
 
-        let aid = ret[0].as_i64().unwrap().try_into().unwrap();
-
-        if let None = tid {
-            new_tid = ret[1].to_string().parse().unwrap();
-        }
-        Activity { tid: new_tid, aid }
+        Activity { tid, aid }
     }
 
     pub fn finish(&self, main: &RawFd) {

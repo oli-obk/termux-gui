@@ -110,8 +110,8 @@ pub fn transmit_buffer(fd: &RawFd, msg: &[u8]) {
     }
 }
 
-pub fn recv_msg(fd: &RawFd) -> Value {
-    serde_json::from_slice(&inner_recv_msg(fd)).unwrap_or(Value::Null)
+pub fn recv_msg<T: for<'a> Deserialize<'a>>(fd: &RawFd) -> Result<T, serde_json::Error> {
+    serde_json::from_slice(&inner_recv_msg(fd))
 }
 
 // Workaround for https://github.com/serde-rs/serde/issues/2200#issuecomment-2563562840
@@ -204,9 +204,9 @@ pub fn send_msg(fd: &RawFd, msg: Value) {
     transmit_buffer(fd, &msg_bytes);
 }
 
-pub fn send_recv_msg(fd: &RawFd, msg: Value) -> Value {
+pub fn send_recv_msg<T: for<'a> Deserialize<'a>>(fd: &RawFd, msg: Value) -> T {
     send_msg(fd, msg);
-    recv_msg(fd)
+    recv_msg(fd).unwrap()
 }
 
 pub fn construct_message(method: &str, args: &Value) -> Value {

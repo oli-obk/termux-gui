@@ -65,8 +65,5 @@ impl TGui {
             &self.main,
             connection::construct_message("isLocked", &json!(null)),
         )
-        .to_string()
-        .parse()
-        .unwrap()
     }
 }

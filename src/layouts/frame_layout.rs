@@ -14,8 +14,8 @@ impl<'a> FrameLayout<'a> {
         if let Some(id) = parent {
             args["parent"] = json!(id);
         }
-        let ret = send_recv_msg(fd, construct_message("createFrameLayout", &args));
-        let id = ret.to_string().parse().unwrap();
+        let id = send_recv_msg(fd, construct_message("createFrameLayout", &args));
+
         FrameLayout { id, aid, sock: fd }
     }
 }

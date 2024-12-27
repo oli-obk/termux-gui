@@ -20,8 +20,8 @@ impl<'a> Button<'a> {
             args["parent"] = json!(id);
         }
 
-        let ret = send_recv_msg(fd, construct_message("createButton", &args));
-        let id: i32 = ret.to_string().parse().unwrap();
+        let id = send_recv_msg(fd, construct_message("createButton", &args));
+
         Button { id, aid, sock: fd }
     }
 }

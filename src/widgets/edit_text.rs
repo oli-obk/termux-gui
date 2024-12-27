@@ -33,8 +33,8 @@ impl<'a> EditText<'a> {
             args["parent"] = json!(id);
         }
 
-        let ret = send_recv_msg(fd, construct_message("createEditText", &args));
-        let id: i32 = ret.to_string().parse().unwrap();
+        let id = send_recv_msg(fd, construct_message("createEditText", &args));
+
         EditText { id, aid, sock: fd }
     }
 

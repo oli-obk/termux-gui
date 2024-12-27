@@ -18,8 +18,8 @@ impl<'a> ProgressBar<'a> {
             args["parent"] = json!(id);
         }
 
-        let ret = send_recv_msg(fd, construct_message("createProgressBar", &args));
-        let id: i32 = ret.to_string().parse().unwrap();
+        let id = send_recv_msg(fd, construct_message("createProgressBar", &args));
+
         ProgressBar { id, aid, sock: fd }
     }
 

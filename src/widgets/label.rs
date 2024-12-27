@@ -28,8 +28,8 @@ impl<'a> Label<'a> {
             args["parent"] = json!(id);
         }
 
-        let ret = send_recv_msg(fd, construct_message("createTextView", &args));
-        let id: i32 = ret.to_string().parse().unwrap();
+        let id = send_recv_msg(fd, construct_message("createTextView", &args));
+
         Label { id, aid, sock: fd }
     }
 }

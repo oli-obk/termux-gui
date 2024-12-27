@@ -18,8 +18,8 @@ impl<'a> Space<'a> {
             args["parent"] = json!(id);
         }
 
-        let ret = send_recv_msg(fd, construct_message("createSpace", &args));
-        let id: i32 = ret.to_string().parse().unwrap();
+        let id = send_recv_msg(fd, construct_message("createSpace", &args));
+
         Space { id, aid, sock: fd }
     }
 }

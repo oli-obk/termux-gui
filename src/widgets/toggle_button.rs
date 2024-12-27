@@ -23,8 +23,7 @@ impl<'a> ToggleButton<'a> {
             args["parent"] = json!(id);
         }
 
-        let ret = send_recv_msg(fd, construct_message("createToggleButton", &args));
-        let id: i32 = ret.to_string().parse().unwrap();
+        let id = send_recv_msg(fd, construct_message("createToggleButton", &args));
         ToggleButton {
             id,
             aid,
