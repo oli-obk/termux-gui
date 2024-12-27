@@ -161,8 +161,7 @@ fn inner_recv_msg(fd: &RawFd) -> Vec<u8> {
         togo = togo.checked_sub(ret).unwrap();
         start += ret;
     }
-
-    msg.iter().map(|&v| v).filter(|&val| val != b'\0').collect()
+    msg[..n].to_vec()
 }
 
 pub fn recv_msg_fd(fd: &RawFd) -> (Value, u8) {
