@@ -117,13 +117,12 @@ pub fn recv_msg<T: for<'a> Deserialize<'a>>(fd: &RawFd) -> Result<T, serde_json:
 // Workaround for https://github.com/serde-rs/serde/issues/2200#issuecomment-2563562840
 fn deser<T: for<'a> Deserialize<'a>>(bytes: &[u8]) -> Result<T, serde_json::Error> {
     let mut value = serde_json::from_slice::<serde_json::Map<String, Value>>(bytes)?;
-    let inner = value
-        .remove("value")
-        .ok_or_else(|| serde::de::Error::missing_field("value"))?;
-    let Value::Object(inner) = inner else {
-        return Err(serde::de::Error::custom("value field is not a map"));
-    };
-    value.extend(inner);
+    if let Some(inner) = value.remove("value") {
+        let Value::Object(inner) = inner else {
+            return Err(serde::de::Error::custom("value field is not a map"));
+        };
+        value.extend(inner);
+    }
 
     serde_json::value::from_value(value.into())
 }
