@@ -1,5 +1,6 @@
 use super::RawFd;
 use super::{construct_message, send_recv_msg, View};
+use base64::prelude::*;
 use serde_json::json;
 use std::io::Cursor;
 
@@ -26,9 +27,9 @@ impl<'a> ImageView<'a> {
         let base_img = image::open(img).unwrap();
         let mut buff: Vec<u8> = Vec::new();
         base_img
-            .write_to(&mut Cursor::new(&mut buff), image::ImageOutputFormat::Png)
+            .write_to(&mut Cursor::new(&mut buff), image::ImageFormat::Png)
             .unwrap();
-        let res_base64 = base64::encode(&buff);
+        let res_base64 = BASE64_STANDARD.encode(&buff);
         let args = json!({
             "aid": &self.aid,
             "id": self.id,
