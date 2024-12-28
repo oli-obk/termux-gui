@@ -22,7 +22,7 @@ pub struct Flags {
 
 /// Behavior when the soft keyboard shows up.
 #[derive(Copy, Clone, serde::Serialize)]
-#[serde(rename = "lowercase")]
+#[serde(rename_all = "lowercase")]
 pub enum InputMode {
     Resize,
     Pan,
