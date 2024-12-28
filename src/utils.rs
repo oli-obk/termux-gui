@@ -1,8 +1,12 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize, Copy, Clone, Debug)]
 pub struct Vec2<T: Sized> {
     pub x: T,
     pub y: T,
 }
 
+#[derive(Copy, Clone, Debug)]
 pub struct Color {
     pub a: u8,
     pub r: u8,

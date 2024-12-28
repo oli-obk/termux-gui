@@ -49,7 +49,7 @@ pub trait TextView: View + Sized {
     }
 
     fn get_text(&self) -> String {
-        self.send_recv_msg("getText", ()).to_string()
+        self.send_recv_msg("getText", ())
     }
 
     fn set_text_color(&self, color: Color) {

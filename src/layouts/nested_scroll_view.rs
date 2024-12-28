@@ -37,10 +37,7 @@ impl<'a> NestedScrollView<'a> {
     }
 
     pub fn get_scroll_position(&self) -> Vec2<u16> {
-        let ret = self.send_recv_msg("getScrollPosition", ());
-        let x: u16 = ret["x"].to_string().parse().unwrap();
-        let y: u16 = ret["y"].to_string().parse().unwrap();
-        Vec2 { x, y }
+        self.send_recv_msg("getScrollPosition", ())
     }
 }
 

@@ -1,6 +1,6 @@
 use super::utils::{Color, Vec2};
 use crate::activity::Activity;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 pub mod button;
@@ -28,9 +28,10 @@ pub trait View {
     fn get_id(&self) -> i32;
     fn get_activity(&self) -> &Activity<'_>;
 
-    fn send_recv_msg(&self, method: &str, params: impl Serialize) -> serde_json::Value
+    fn send_recv_msg<T>(&self, method: &str, params: impl Serialize) -> T
     where
         Self: Sized,
+        T: for<'a> Deserialize<'a>,
     {
         self.get_activity().send_recv_msg(
             method,
@@ -166,11 +167,7 @@ pub trait View {
     where
         Self: Sized,
     {
-        let ret = self.send_recv_msg("getDimensions", ());
-        Vec2 {
-            x: ret[0].to_string().parse().unwrap(),
-            y: ret[1].to_string().parse().unwrap(),
-        }
+        self.send_recv_msg("getDimensions", ())
     }
 
     fn set_background_color(&self, color: Color)
