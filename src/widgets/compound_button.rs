@@ -11,7 +11,7 @@ pub trait CompoundButton: TextView {
             kind: event::Widget::Click { set },
         } = e
         {
-            if aid == self.get_aid() && id == self.get_id() {
+            if aid == self.get_activity().aid() && id == self.get_id() {
                 self.check(set);
             }
         }

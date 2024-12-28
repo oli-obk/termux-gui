@@ -1,3 +1,4 @@
+use crate::TGui;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::io::Read;
@@ -44,10 +45,6 @@ pub fn connect() -> (UnixStream, UnixStream) {
     main.read_exact(&mut res).unwrap();
     assert_eq!(res, [0]);
     (main, event)
-}
-
-pub fn recv_msg<T: for<'a> Deserialize<'a>>(fd: &UnixStream) -> Result<T, serde_json::Error> {
-    serde_json::from_slice(&inner_recv_msg(fd))
 }
 
 // Workaround for https://github.com/serde-rs/serde/issues/2200#issuecomment-2563562840
@@ -122,18 +119,21 @@ struct Message<'a, T: Serialize> {
     params: T,
 }
 
-pub fn send_msg(mut fd: &UnixStream, method: &str, params: impl Serialize) {
-    let msg_bytes = serde_json::to_vec(&Message { method, params }).unwrap();
-    let msg_len = u32::to_be_bytes(msg_bytes.len().try_into().unwrap());
-    fd.write_all(&msg_len).unwrap();
-    fd.write_all(&msg_bytes).unwrap();
-}
+impl TGui {
+    pub fn send_msg(&self, method: &str, params: impl Serialize) {
+        let msg_bytes = serde_json::to_vec(&Message { method, params }).unwrap();
+        let msg_len = u32::to_be_bytes(msg_bytes.len().try_into().unwrap());
+        let mut fd = &self.main;
+        fd.write_all(&msg_len).unwrap();
+        fd.write_all(&msg_bytes).unwrap();
+    }
 
-pub fn send_recv_msg<T: for<'a> Deserialize<'a>>(
-    fd: &UnixStream,
-    method: &str,
-    params: impl Serialize,
-) -> T {
-    send_msg(fd, method, params);
-    recv_msg(fd).unwrap()
+    pub fn send_recv_msg<T: for<'a> Deserialize<'a>>(
+        &self,
+        method: &str,
+        params: impl Serialize,
+    ) -> T {
+        self.send_msg(method, params);
+        serde_json::from_slice(&inner_recv_msg(&self.main)).unwrap()
+    }
 }

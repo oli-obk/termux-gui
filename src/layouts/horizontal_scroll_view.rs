@@ -1,30 +1,30 @@
 use super::Vec2;
-use super::{send_recv_msg, RawFd, View, ViewGroup};
+use super::{View, ViewGroup};
+use crate::activity::Activity;
 use serde_json::json;
 
 pub struct HorizontalScrollView<'a> {
-    aid: i32,
+    activity: &'a Activity<'a>,
     id: i32,
-    sock: &'a RawFd,
 }
 
 impl<'a> HorizontalScrollView<'a> {
     pub fn new(
-        fd: &'a RawFd,
-        aid: i32,
+        activity: &'a Activity<'a>,
         parent: Option<i32>,
         fill_viewport: bool,
         snapping: bool,
         no_bar: bool,
     ) -> Self {
-        let mut args = json!({ "aid": aid, "fillviewport": fill_viewport, "snapping": snapping, "nobar": no_bar});
+        let mut args =
+            json!({ "fillviewport": fill_viewport, "snapping": snapping, "nobar": no_bar});
 
         if let Some(id) = parent {
             args["parent"] = json!(id);
         }
-        let id = send_recv_msg(fd, "createHorizontalScrollView", args);
+        let id = activity.send_recv_msg("createHorizontalScrollView", args);
 
-        HorizontalScrollView { id, aid, sock: fd }
+        HorizontalScrollView { id, activity }
     }
 
     pub fn set_scroll_position(&self, pos: Vec2<u16>, smooth: bool) {
@@ -49,12 +49,8 @@ impl<'a> View for HorizontalScrollView<'a> {
         self.id
     }
 
-    fn get_aid(&self) -> i32 {
-        self.aid
-    }
-
-    fn get_sock(&self) -> &RawFd {
-        self.sock
+    fn get_activity(&self) -> &Activity<'a> {
+        self.activity
     }
 }
 

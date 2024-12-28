@@ -11,23 +11,21 @@ use super::widgets::{
     progress_bar::ProgressBar, radio_button::RadioButton, space::Space, spinner::Spinner,
     switch::Switch, toggle_button::ToggleButton, View,
 };
-use super::RawFd;
+use crate::TGui;
 
 pub struct Ui<'a> {
-    activity: Activity,
-    main: &'a RawFd,
+    activity: Activity<'a>,
 }
 
 impl<'a> Ui<'a> {
-    pub fn new(main: &'a RawFd, flags: crate::activity::Flags) -> Self {
+    pub fn new(gui: &'a TGui, flags: crate::activity::Flags) -> Self {
         Ui {
-            activity: Activity::new(main, flags),
-            main,
+            activity: Activity::new(gui, flags),
         }
     }
 
     pub fn set_input_mode(&self, mode: InputMode) {
-        self.activity.set_input_mode(self.main, mode)
+        self.activity.set_input_mode(mode)
     }
 
     pub fn radio_button(&self, parent: Option<&dyn View>, text: &str, check: bool) -> RadioButton {
@@ -35,7 +33,7 @@ impl<'a> Ui<'a> {
             Some(parent) => Some(parent.get_id()),
             None => None,
         };
-        RadioButton::new(self.main, self.activity.aid, parent, text, check)
+        RadioButton::new(&self.activity, parent, text, check)
     }
 
     pub fn default_radio_button(&self, parent: Option<&dyn View>, text: &str) -> RadioButton {
@@ -52,7 +50,7 @@ impl<'a> Ui<'a> {
             Some(parent) => Some(parent.get_id()),
             None => None,
         };
-        ToggleButton::new(self.main, self.activity.aid, parent, text, check)
+        ToggleButton::new(&self.activity, parent, text, check)
     }
 
     pub fn default_toggle_button(&self, parent: Option<&dyn View>, text: &str) -> ToggleButton {
@@ -64,7 +62,7 @@ impl<'a> Ui<'a> {
             Some(parent) => Some(parent.get_id()),
             None => None,
         };
-        Switch::new(self.main, self.activity.aid, parent, text, check)
+        Switch::new(&self.activity, parent, text, check)
     }
 
     pub fn default_switch(&self, parent: Option<&dyn View>, text: &str) -> Switch {
@@ -76,7 +74,7 @@ impl<'a> Ui<'a> {
             Some(parent) => Some(parent.get_id()),
             None => None,
         };
-        CheckBox::new(self.main, self.activity.aid, parent, text, check)
+        CheckBox::new(&self.activity, parent, text, check)
     }
 
     pub fn default_check_box(&self, parent: Option<&dyn View>, text: &str) -> CheckBox {
@@ -95,8 +93,7 @@ impl<'a> Ui<'a> {
             None => None,
         };
         Label::new(
-            self.main,
-            self.activity.aid,
+            &self.activity,
             parent,
             text,
             selectable_text,
@@ -114,7 +111,7 @@ impl<'a> Ui<'a> {
             Some(parent) => Some(parent.get_id()),
             None => None,
         };
-        ImageView::new(self.main, self.activity.aid, parent)
+        ImageView::new(&self.activity, parent)
     }
 
     pub fn spinner(&self, parent: Option<&dyn View>) -> Spinner {
@@ -122,7 +119,7 @@ impl<'a> Ui<'a> {
             Some(parent) => Some(parent.get_id()),
             None => None,
         };
-        Spinner::new(self.main, self.activity.aid, parent)
+        Spinner::new(&self.activity, parent)
     }
 
     pub fn space(&self, parent: Option<&dyn View>) -> Space {
@@ -130,7 +127,7 @@ impl<'a> Ui<'a> {
             Some(parent) => Some(parent.get_id()),
             None => None,
         };
-        Space::new(self.main, self.activity.aid, parent)
+        Space::new(&self.activity, parent)
     }
 
     pub fn progress_bar(&self, parent: Option<&dyn View>) -> ProgressBar {
@@ -138,7 +135,7 @@ impl<'a> Ui<'a> {
             Some(parent) => Some(parent.get_id()),
             None => None,
         };
-        ProgressBar::new(self.main, self.activity.aid, parent)
+        ProgressBar::new(&self.activity, parent)
     }
 
     pub fn button(&self, parent: Option<&dyn View>, text: &str) -> Button {
@@ -146,7 +143,7 @@ impl<'a> Ui<'a> {
             Some(parent) => Some(parent.get_id()),
             None => None,
         };
-        Button::new(self.main, self.activity.aid, parent, text)
+        Button::new(&self.activity, parent, text)
     }
 
     pub fn edit_text(
@@ -163,8 +160,7 @@ impl<'a> Ui<'a> {
             None => None,
         };
         EditText::new(
-            self.main,
-            self.activity.aid,
+            &self.activity,
             parent,
             text,
             single_line,
@@ -183,7 +179,7 @@ impl<'a> Ui<'a> {
             Some(parent) => Some(parent.get_id()),
             None => None,
         };
-        LinearLayout::new(self.main, self.activity.aid, parent, vertical)
+        LinearLayout::new(&self.activity, parent, vertical)
     }
 
     pub fn swipe_refresh_layout(&self, parent: Option<&dyn View>) -> SwipeRefreshLayout {
@@ -191,14 +187,14 @@ impl<'a> Ui<'a> {
             Some(parent) => Some(parent.get_id()),
             None => None,
         };
-        SwipeRefreshLayout::new(self.main, self.activity.aid, parent)
+        SwipeRefreshLayout::new(&self.activity, parent)
     }
     pub fn radio_group(&self, parent: Option<&dyn View>) -> RadioGroup {
         let parent: Option<i32> = match parent {
             Some(parent) => Some(parent.get_id()),
             None => None,
         };
-        RadioGroup::new(self.main, self.activity.aid, parent)
+        RadioGroup::new(&self.activity, parent)
     }
 
     pub fn tab_layout(&self, parent: Option<&dyn View>) -> TabLayout {
@@ -206,7 +202,7 @@ impl<'a> Ui<'a> {
             Some(parent) => Some(parent.get_id()),
             None => None,
         };
-        TabLayout::new(self.main, self.activity.aid, parent)
+        TabLayout::new(&self.activity, parent)
     }
 
     pub fn frame_layout(&self, parent: Option<&dyn View>) -> FrameLayout {
@@ -214,7 +210,7 @@ impl<'a> Ui<'a> {
             Some(parent) => Some(parent.get_id()),
             None => None,
         };
-        FrameLayout::new(self.main, self.activity.aid, parent)
+        FrameLayout::new(&self.activity, parent)
     }
 
     pub fn nested_scroll_view(
@@ -228,14 +224,7 @@ impl<'a> Ui<'a> {
             Some(parent) => Some(parent.get_id()),
             None => None,
         };
-        NestedScrollView::new(
-            self.main,
-            self.activity.aid,
-            parent,
-            fill_viewport,
-            snapping,
-            no_bar,
-        )
+        NestedScrollView::new(&self.activity, parent, fill_viewport, snapping, no_bar)
     }
 
     pub fn default_nested_scroll_view(&self, parent: Option<&dyn View>) -> NestedScrollView {
@@ -253,14 +242,7 @@ impl<'a> Ui<'a> {
             Some(parent) => Some(parent.get_id()),
             None => None,
         };
-        HorizontalScrollView::new(
-            self.main,
-            self.activity.aid,
-            parent,
-            fill_viewport,
-            snapping,
-            no_bar,
-        )
+        HorizontalScrollView::new(&self.activity, parent, fill_viewport, snapping, no_bar)
     }
 
     pub fn default_horizontal_scroll_view(
@@ -271,6 +253,6 @@ impl<'a> Ui<'a> {
     }
 
     pub fn finish(&self) {
-        self.activity.finish(self.main);
+        self.activity.finish();
     }
 }

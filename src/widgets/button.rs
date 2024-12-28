@@ -1,18 +1,16 @@
 use super::label::TextView;
-use super::RawFd;
-use super::{send_recv_msg, View};
+use super::View;
+use crate::activity::Activity;
 use serde_json::json;
 
 pub struct Button<'a> {
     id: i32,
-    aid: i32,
-    sock: &'a RawFd,
+    activity: &'a Activity<'a>,
 }
 
 impl<'a> Button<'a> {
-    pub fn new(fd: &'a RawFd, aid: i32, parent: Option<i32>, text: &str) -> Self {
+    pub fn new(activity: &'a Activity<'a>, parent: Option<i32>, text: &str) -> Self {
         let mut args = json!({
-            "aid": aid,
             "text": text,
         });
 
@@ -20,9 +18,9 @@ impl<'a> Button<'a> {
             args["parent"] = json!(id);
         }
 
-        let id = send_recv_msg(fd, "createButton", args);
+        let id = activity.send_recv_msg("createButton", args);
 
-        Button { id, aid, sock: fd }
+        Button { id, activity }
     }
 }
 
@@ -33,11 +31,7 @@ impl<'a> View for Button<'a> {
         self.id
     }
 
-    fn get_aid(&self) -> i32 {
-        self.aid
-    }
-
-    fn get_sock(&self) -> &RawFd {
-        self.sock
+    fn get_activity(&self) -> &Activity<'a> {
+        self.activity
     }
 }

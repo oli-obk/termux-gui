@@ -1,20 +1,18 @@
 use super::compound_button::CompoundButton;
 use super::label::TextView;
-use super::RawFd;
-use super::{send_recv_msg, View};
+use super::View;
+use crate::activity::Activity;
 use serde_json::json;
 
 pub struct Switch<'a> {
     id: i32,
-    aid: i32,
-    sock: &'a RawFd,
+    activity: &'a Activity<'a>,
     check: bool,
 }
 
 impl<'a> Switch<'a> {
-    pub fn new(fd: &'a RawFd, aid: i32, parent: Option<i32>, text: &str, check: bool) -> Self {
+    pub fn new(activity: &'a Activity<'a>, parent: Option<i32>, text: &str, check: bool) -> Self {
         let mut args = json!({
-            "aid": aid,
             "text": text,
             "checked": check
         });
@@ -23,12 +21,11 @@ impl<'a> Switch<'a> {
             args["parent"] = json!(id);
         }
 
-        let id = send_recv_msg(fd, "createSwitch", args);
+        let id = activity.send_recv_msg("createSwitch", args);
 
         Switch {
             id,
-            aid,
-            sock: fd,
+            activity,
             check,
         }
     }
@@ -47,11 +44,7 @@ impl<'a> View for Switch<'a> {
         self.id
     }
 
-    fn get_aid(&self) -> i32 {
-        self.aid
-    }
-
-    fn get_sock(&self) -> &RawFd {
-        self.sock
+    fn get_activity(&self) -> &Activity {
+        self.activity
     }
 }

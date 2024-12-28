@@ -1,8 +1,6 @@
 use serde_json::json;
 use std::os::unix::net::UnixStream;
 
-type RawFd = UnixStream;
-
 pub mod connection;
 
 pub mod activity;
@@ -26,11 +24,11 @@ impl TGui {
     }
 
     pub fn activity(&self, flags: activity::Flags) -> activity::Activity {
-        activity::Activity::new(&self.main, flags)
+        activity::Activity::new(self, flags)
     }
 
     pub fn ui(&self, flags: activity::Flags) -> ui::Ui {
-        ui::Ui::new(&self.main, flags)
+        ui::Ui::new(self, flags)
     }
 
     pub fn event(&self) -> Result<event::Event, serde_json::Error> {
@@ -42,14 +40,14 @@ impl TGui {
             "text": text,
             "long": long
         });
-        connection::send_msg(&self.main, "toast", args);
+        self.send_msg("toast", args);
     }
 
     pub fn turn_screen_on(&self) {
-        connection::send_msg(&self.main, "turnScreenOn", ());
+        self.send_msg("turnScreenOn", ());
     }
 
     pub fn is_locked(&self) -> bool {
-        connection::send_recv_msg(&self.main, "isLocked", ())
+        self.send_recv_msg("isLocked", ())
     }
 }

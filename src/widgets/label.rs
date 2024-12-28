@@ -1,24 +1,21 @@
-use super::RawFd;
-use super::{send_recv_msg, Color, View};
+use super::{Color, View};
+use crate::activity::Activity;
 use serde_json::json;
 
 pub struct Label<'a> {
     id: i32,
-    aid: i32,
-    sock: &'a RawFd,
+    activity: &'a Activity<'a>,
 }
 
 impl<'a> Label<'a> {
     pub fn new(
-        fd: &'a RawFd,
-        aid: i32,
+        activity: &'a Activity<'a>,
         parent: Option<i32>,
         text: &str,
         selectable_text: bool,
         clickable_links: bool,
     ) -> Self {
         let mut args = json!({
-            "aid": aid,
             "text": text,
             "selectableText": selectable_text,
             "clickableLinks": clickable_links
@@ -28,9 +25,9 @@ impl<'a> Label<'a> {
             args["parent"] = json!(id);
         }
 
-        let id = send_recv_msg(fd, "createTextView", args);
+        let id = activity.send_recv_msg("createTextView", args);
 
-        Label { id, aid, sock: fd }
+        Label { id, activity }
     }
 }
 
@@ -74,16 +71,12 @@ pub trait TextView: View + Sized {
 
 impl TextView for Label<'_> {}
 
-impl View for Label<'_> {
+impl<'a> View for Label<'a> {
     fn get_id(&self) -> i32 {
         self.id
     }
 
-    fn get_aid(&self) -> i32 {
-        self.aid
-    }
-
-    fn get_sock(&self) -> &RawFd {
-        self.sock
+    fn get_activity(&self) -> &Activity<'a> {
+        self.activity
     }
 }

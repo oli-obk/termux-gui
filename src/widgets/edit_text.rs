@@ -1,18 +1,16 @@
 use super::label::TextView;
-use super::RawFd;
-use super::{send_recv_msg, View};
+use super::View;
+use crate::activity::Activity;
 use serde_json::json;
 
 pub struct EditText<'a> {
     id: i32,
-    aid: i32,
-    sock: &'a RawFd,
+    activity: &'a Activity<'a>,
 }
 
 impl<'a> EditText<'a> {
     pub fn new(
-        fd: &'a RawFd,
-        aid: i32,
+        activity: &'a Activity<'a>,
         parent: Option<i32>,
         text: &str,
         single_line: bool,
@@ -21,7 +19,6 @@ impl<'a> EditText<'a> {
         ty: &str,
     ) -> Self {
         let mut args = json!({
-            "aid": aid,
             "text": text,
             "singleline": single_line,
             "line": line,
@@ -33,9 +30,9 @@ impl<'a> EditText<'a> {
             args["parent"] = json!(id);
         }
 
-        let id = send_recv_msg(fd, "createEditText", args);
+        let id = activity.send_recv_msg("createEditText", args);
 
-        EditText { id, aid, sock: fd }
+        EditText { id, activity }
     }
 
     pub fn show_cursor(&self, show: bool) {
@@ -53,11 +50,7 @@ impl<'a> View for EditText<'a> {
         self.id
     }
 
-    fn get_aid(&self) -> i32 {
-        self.aid
-    }
-
-    fn get_sock(&self) -> &RawFd {
-        self.sock
+    fn get_activity(&self) -> &Activity<'a> {
+        self.activity
     }
 }

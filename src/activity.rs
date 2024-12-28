@@ -1,11 +1,12 @@
-use super::connection::{send_msg, send_recv_msg};
-use super::RawFd;
-use serde::Serialize;
+use super::TGui;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-pub struct Activity {
-    pub tid: i32,
-    pub aid: i32,
+pub struct Activity<'a> {
+    #[expect(dead_code)]
+    tid: i32,
+    aid: i32,
+    gui: &'a TGui,
 }
 
 #[derive(Serialize, Default)]
@@ -27,26 +28,57 @@ pub enum InputMode {
     Pan,
 }
 
-impl Activity {
-    pub fn new(main: &RawFd, flags: Flags) -> Self {
-        let [aid, tid] = send_recv_msg(main, "newActivity", flags);
+#[derive(Serialize)]
+struct WithId<T: Serialize> {
+    aid: i32,
+    #[serde(flatten)]
+    params: T,
+}
 
-        Activity { tid, aid }
+impl<'a> Activity<'a> {
+    pub fn new(gui: &'a TGui, flags: Flags) -> Self {
+        let [aid, tid] = gui.send_recv_msg("newActivity", flags);
+
+        Activity { tid, aid, gui }
     }
 
-    pub fn finish(&self, main: &RawFd) {
-        let args = json!({
-            "aid": self.aid
-        });
-        send_msg(main, "finishActivity", args);
+    pub fn send_recv_msg<T: for<'d> Deserialize<'d>>(
+        &self,
+        method: &str,
+        params: impl Serialize,
+    ) -> T {
+        self.gui.send_recv_msg(
+            method,
+            WithId {
+                params,
+                aid: self.aid,
+            },
+        )
     }
 
-    pub fn set_input_mode(&self, main: &RawFd, mode: InputMode) {
+    pub fn send_msg(&self, method: &str, params: impl Serialize) {
+        self.gui.send_msg(
+            method,
+            WithId {
+                params,
+                aid: self.aid,
+            },
+        );
+    }
+
+    pub fn finish(&self) {
+        self.send_msg("finishActivity", ());
+    }
+
+    pub fn set_input_mode(&self, mode: InputMode) {
         let args = json!({
-            "aid": &self.aid,
             "mode": mode
         });
 
-        send_msg(main, "setInputMode", args);
+        self.send_msg("setInputMode", args);
+    }
+
+    pub fn aid(&self) -> i32 {
+        self.aid
     }
 }

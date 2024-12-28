@@ -1,6 +1,5 @@
-use super::connection::{send_msg, send_recv_msg};
 use super::utils::{Color, Vec2};
-use super::RawFd;
+use crate::activity::Activity;
 use serde::Serialize;
 use serde_json::json;
 
@@ -19,29 +18,25 @@ pub mod switch;
 pub mod toggle_button;
 
 #[derive(Serialize)]
-struct WithIds<T: Serialize> {
+struct WithId<T: Serialize> {
     id: i32,
-    aid: i32,
     #[serde(flatten)]
     params: T,
 }
 
 pub trait View {
     fn get_id(&self) -> i32;
-    fn get_aid(&self) -> i32;
-    fn get_sock(&self) -> &RawFd;
+    fn get_activity(&self) -> &Activity<'_>;
 
     fn send_recv_msg(&self, method: &str, params: impl Serialize) -> serde_json::Value
     where
         Self: Sized,
     {
-        send_recv_msg(
-            self.get_sock(),
+        self.get_activity().send_recv_msg(
             method,
-            WithIds {
+            WithId {
                 params,
                 id: self.get_id(),
-                aid: self.get_aid(),
             },
         )
     }
@@ -49,13 +44,11 @@ pub trait View {
     where
         Self: Sized,
     {
-        send_msg(
-            self.get_sock(),
+        self.get_activity().send_msg(
             method,
-            WithIds {
+            WithId {
                 params,
                 id: self.get_id(),
-                aid: self.get_aid(),
             },
         );
     }

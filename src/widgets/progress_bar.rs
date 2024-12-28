@@ -1,26 +1,23 @@
-use super::RawFd;
-use super::{send_recv_msg, View};
+use super::View;
+use crate::activity::Activity;
 use serde_json::json;
 
 pub struct ProgressBar<'a> {
     id: i32,
-    aid: i32,
-    sock: &'a RawFd,
+    activity: &'a Activity<'a>,
 }
 
 impl<'a> ProgressBar<'a> {
-    pub fn new(fd: &'a RawFd, aid: i32, parent: Option<i32>) -> Self {
-        let mut args = json!({
-            "aid": aid,
-        });
+    pub fn new(activity: &'a Activity<'a>, parent: Option<i32>) -> Self {
+        let mut args = json!({});
 
         if let Some(id) = parent {
             args["parent"] = json!(id);
         }
 
-        let id = send_recv_msg(fd, "createProgressBar", args);
+        let id = activity.send_recv_msg("createProgressBar", args);
 
-        ProgressBar { id, aid, sock: fd }
+        ProgressBar { id, activity }
     }
 
     pub fn set_progress(&self, progress: u8) {
@@ -34,11 +31,7 @@ impl<'a> View for ProgressBar<'a> {
         self.id
     }
 
-    fn get_aid(&self) -> i32 {
-        self.aid
-    }
-
-    fn get_sock(&self) -> &RawFd {
-        self.sock
+    fn get_activity(&self) -> &Activity<'a> {
+        self.activity
     }
 }

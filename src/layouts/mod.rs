@@ -1,6 +1,5 @@
-use super::connection::send_recv_msg;
 use super::utils::Vec2;
-use super::{RawFd, View};
+use super::View;
 
 pub mod frame_layout;
 pub mod horizontal_scroll_view;
