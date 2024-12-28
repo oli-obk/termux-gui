@@ -13,14 +13,20 @@ pub mod widgets;
 use widgets::View;
 
 pub struct TGui {
-    pub main: UnixStream,
-    pub event: UnixStream,
+    main: UnixStream,
+    event: UnixStream,
+    /// Whether to dump stream messages to stderr
+    pub debug: bool,
 }
 
 impl TGui {
     pub fn new() -> Self {
         let (main, event) = connection::connect();
-        TGui { main, event }
+        TGui {
+            main,
+            event,
+            debug: false,
+        }
     }
 
     pub fn activity(&self, flags: activity::Flags) -> activity::Activity {

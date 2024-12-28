@@ -123,6 +123,10 @@ impl TGui {
     pub fn send_msg(&self, method: &str, params: impl Serialize) {
         let msg_bytes = serde_json::to_vec(&Message { method, params }).unwrap();
         let msg_len = u32::to_be_bytes(msg_bytes.len().try_into().unwrap());
+        if self.debug {
+            std::io::stderr().write_all(&msg_bytes).unwrap();
+            eprintln!();
+        }
         let mut fd = &self.main;
         fd.write_all(&msg_len).unwrap();
         fd.write_all(&msg_bytes).unwrap();
