@@ -2,9 +2,8 @@ use super::TGui;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
+#[derive(Copy, Clone)]
 pub struct Activity<'a> {
-    #[expect(dead_code)]
-    tid: i32,
     aid: i32,
     gui: &'a TGui,
 }
@@ -37,9 +36,9 @@ struct WithId<T: Serialize> {
 
 impl<'a> Activity<'a> {
     pub fn new(gui: &'a TGui, flags: Flags) -> Self {
-        let [aid, tid] = gui.send_recv_msg("newActivity", flags);
+        let [aid, _tid] = gui.send_recv_msg("newActivity", flags);
 
-        Activity { tid, aid, gui }
+        Activity { aid, gui }
     }
 
     pub fn send_recv_msg<T: for<'d> Deserialize<'d>>(

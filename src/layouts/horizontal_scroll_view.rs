@@ -4,13 +4,13 @@ use crate::activity::Activity;
 use serde_json::json;
 
 pub struct HorizontalScrollView<'a> {
-    activity: &'a Activity<'a>,
+    activity: Activity<'a>,
     id: i32,
 }
 
 impl<'a> HorizontalScrollView<'a> {
     pub fn new(
-        activity: &'a Activity<'a>,
+        activity: Activity<'a>,
         parent: Option<i32>,
         fill_viewport: bool,
         snapping: bool,
@@ -47,7 +47,7 @@ impl<'a> View for HorizontalScrollView<'a> {
     }
 
     fn get_activity(&self) -> &Activity<'a> {
-        self.activity
+        &self.activity
     }
 }
 

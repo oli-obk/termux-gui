@@ -3,12 +3,12 @@ use crate::activity::Activity;
 use serde_json::json;
 
 pub struct LinearLayout<'a> {
-    activity: &'a Activity<'a>,
+    activity: Activity<'a>,
     id: i32,
 }
 
 impl<'a> LinearLayout<'a> {
-    pub fn new(activity: &'a Activity<'a>, parent: Option<i32>, vertical: bool) -> Self {
+    pub fn new(activity: Activity<'a>, parent: Option<i32>, vertical: bool) -> Self {
         let mut args = json!({
             "vertical": vertical
         });
@@ -28,7 +28,7 @@ impl<'a> View for LinearLayout<'a> {
     }
 
     fn get_activity(&self) -> &Activity<'a> {
-        self.activity
+        &self.activity
     }
 }
 

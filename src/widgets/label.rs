@@ -4,12 +4,12 @@ use serde_json::json;
 
 pub struct Label<'a> {
     id: i32,
-    activity: &'a Activity<'a>,
+    activity: Activity<'a>,
 }
 
 impl<'a> Label<'a> {
     pub fn new(
-        activity: &'a Activity<'a>,
+        activity: Activity<'a>,
         parent: Option<i32>,
         text: &str,
         selectable_text: bool,
@@ -77,6 +77,6 @@ impl<'a> View for Label<'a> {
     }
 
     fn get_activity(&self) -> &Activity<'a> {
-        self.activity
+        &self.activity
     }
 }

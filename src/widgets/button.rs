@@ -5,11 +5,11 @@ use serde_json::json;
 
 pub struct Button<'a> {
     id: i32,
-    activity: &'a Activity<'a>,
+    activity: Activity<'a>,
 }
 
 impl<'a> Button<'a> {
-    pub fn new(activity: &'a Activity<'a>, parent: Option<i32>, text: &str) -> Self {
+    pub fn new(activity: Activity<'a>, parent: Option<i32>, text: &str) -> Self {
         let mut args = json!({
             "text": text,
         });
@@ -32,6 +32,6 @@ impl<'a> View for Button<'a> {
     }
 
     fn get_activity(&self) -> &Activity<'a> {
-        self.activity
+        &self.activity
     }
 }

@@ -6,12 +6,12 @@ use serde_json::json;
 
 pub struct CheckBox<'a> {
     id: i32,
-    activity: &'a Activity<'a>,
+    activity: Activity<'a>,
     check: bool,
 }
 
 impl<'a> CheckBox<'a> {
-    pub fn new(activity: &'a Activity<'a>, parent: Option<i32>, text: &str, check: bool) -> Self {
+    pub fn new(activity: Activity<'a>, parent: Option<i32>, text: &str, check: bool) -> Self {
         let mut args = json!({
             "text": text,
             "checked": check
@@ -45,6 +45,6 @@ impl<'a> View for CheckBox<'a> {
     }
 
     fn get_activity(&self) -> &Activity<'a> {
-        self.activity
+        &self.activity
     }
 }

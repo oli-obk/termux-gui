@@ -3,12 +3,12 @@ use crate::activity::Activity;
 use serde_json::json;
 
 pub struct RadioGroup<'a> {
-    activity: &'a Activity<'a>,
+    activity: Activity<'a>,
     id: i32,
 }
 
 impl<'a> RadioGroup<'a> {
-    pub fn new(activity: &'a Activity<'a>, parent: Option<i32>) -> Self {
+    pub fn new(activity: Activity<'a>, parent: Option<i32>) -> Self {
         let mut args = json!({});
 
         if let Some(id) = parent {
@@ -26,7 +26,7 @@ impl<'a> View for RadioGroup<'a> {
     }
 
     fn get_activity(&self) -> &Activity<'a> {
-        self.activity
+        &self.activity
     }
 }
 

@@ -5,12 +5,12 @@ use serde_json::json;
 
 pub struct EditText<'a> {
     id: i32,
-    activity: &'a Activity<'a>,
+    activity: Activity<'a>,
 }
 
 impl<'a> EditText<'a> {
     pub fn new(
-        activity: &'a Activity<'a>,
+        activity: Activity<'a>,
         parent: Option<i32>,
         text: &str,
         single_line: bool,
@@ -51,6 +51,6 @@ impl<'a> View for EditText<'a> {
     }
 
     fn get_activity(&self) -> &Activity<'a> {
-        self.activity
+        &self.activity
     }
 }
