@@ -49,12 +49,13 @@ pub enum Activity {
 
 #[derive(Debug, Deserialize)]
 #[serde(tag = "type")]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "camelCase")]
 pub enum Widget {
     Click {
         #[serde(default)]
         set: bool,
     },
+    LongClick,
     Text {
         text: String,
     },
