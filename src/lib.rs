@@ -1,9 +1,8 @@
 use serde_json::json;
 use std::os::unix::net::UnixStream;
 
-pub mod connection;
-
 pub mod activity;
+pub mod connection;
 pub mod event;
 pub mod layouts;
 pub mod ui;

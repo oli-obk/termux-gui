@@ -1,6 +1,10 @@
 use serde::Deserialize;
 use serde_json::{Map, Value};
 
+mod handler;
+
+pub use handler::Handler;
+
 pub const LONG_CLICK: &str = "longClick";
 pub const FOCUS_CHANGE: &str = "focusChange";
 pub const KEY: &str = "key";

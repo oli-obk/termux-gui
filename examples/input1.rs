@@ -1,4 +1,4 @@
-use tgui::event::{self, Event, Widget::Click};
+use tgui::event::{Widget::Click, Handler};
 use tgui::widgets::{label::TextView, View};
 use tgui::TGui;
 
@@ -10,7 +10,10 @@ fn main() {
         ..Default::default()
     };
 
-    let ui = tgui.ui(flags);
+    let mut ehs: Handler = Handler::new(&tgui);
+
+    let aid = ehs.new_activity(flags);
+    let ui = &ehs[aid];
     let layout = ui.linear_layout(None, true);
 
     let title = ui.label(Some(&layout), "Download Video", false, false);
@@ -28,21 +31,11 @@ fn main() {
     ui.button(Some(&buttons), "Download");
     let cancel = ui.button(Some(&buttons), "Cancel");
 
-    loop {
-        match tgui.event().unwrap() {
-            Event::Activity {
-                kind: event::Activity::Destroy,
-                finishing: true,
-                ..
-            } => break,
-            Event::Widget {
-                id,
-                kind: Click { .. },
-                ..
-            } if id == cancel.get_id() => ui.finish(),
-            other => {
-                eprintln!("{other:#?}")
-            }
-        }
-    }
+    ehs.add_widget(&cancel, |kind, ehs| {
+        Ok(if let Click { .. } = kind {
+            ehs[aid].finish()
+        })
+    });
+
+    ehs.handle_all_events().unwrap();
 }
