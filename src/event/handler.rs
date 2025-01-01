@@ -133,6 +133,19 @@ impl<'a, E> Handler<'a, E> {
         })
     }
 
+    /// Convenience helper for registering a `LongClick { .. }` widget event handler.
+    pub fn on_long_click(
+        &mut self,
+        view: &impl View,
+        mut f: impl FnMut(&mut Self) -> Result<(), E> + 'a,
+    ) {
+        self.add_widget(view, move |w, ehs| {
+            Ok(if let Widget::LongClick { .. } = w {
+                f(ehs)?
+            })
+        })
+    }
+
     /// Convenience helper for registering a `Refresh` widget event handler.
     /// Automatically clears the refreshing spinner when the handler finishes.
     pub fn on_refresh(
