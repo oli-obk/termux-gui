@@ -119,6 +119,19 @@ impl<'a, E> Handler<'a, E> {
             .push(eh);
     }
 
+    /// Convenience helper for registering a `Click { .. }` widget event handler.
+    pub fn on_click(
+        &mut self,
+        view: &impl View,
+        mut f: impl FnMut(&mut Self) -> Result<(), E> + 'a,
+    ) {
+        self.add_widget(view, move |w, ehs| {
+            Ok(if let Widget::Click { .. } = w {
+                f(ehs)?
+            })
+        })
+    }
+
     pub fn new(tgui: &'a TGui) -> Self {
         Self {
             tgui,
