@@ -24,8 +24,8 @@ impl<'a> Ui<'a> {
         }
     }
 
-    pub fn activity(&self) -> &Activity<'a> {
-        &self.activity
+    pub fn activity(&self) -> Activity<'a> {
+        self.activity
     }
 
     pub fn set_input_mode(&self, mode: InputMode) {

@@ -1,5 +1,5 @@
-use super::{Activity, Event, Widget};
 use crate::activity::Flags;
+use crate::event::{self, Event};
 use crate::layouts::swipe_refresh_layout::SwipeRefreshLayout;
 use crate::ui::Ui;
 use crate::widgets::View;
@@ -9,8 +9,8 @@ use std::collections::HashMap;
 type HandlerList<'a, T, E> = Vec<Box<dyn FnMut(&T, &mut Handler<'a, E>) -> Result<(), E> + 'a>>;
 
 struct ActivityInfo<'a, E> {
-    widget: HashMap<i32, HandlerList<'a, Widget, E>>,
-    handlers: HandlerList<'a, Activity, E>,
+    widget: HashMap<i32, HandlerList<'a, event::Widget, E>>,
+    handlers: HandlerList<'a, event::Activity, E>,
     ui: Ui<'a>,
 }
 
@@ -78,7 +78,7 @@ impl<'a, E> Handler<'a, E> {
             match &event {
                 Event::Activity {
                     finishing: true,
-                    kind: Activity::Destroy,
+                    kind: event::Activity::Destroy,
                     aid,
                 } => {
                     self.activity.remove(aid).unwrap();
@@ -98,7 +98,7 @@ impl<'a, E> Handler<'a, E> {
     pub fn add_activity(
         &mut self,
         aid: i32,
-        eh: impl FnMut(&Activity, &mut Self) -> Result<(), E> + 'a,
+        eh: impl FnMut(&event::Activity, &mut Self) -> Result<(), E> + 'a,
     ) {
         let eh = Box::new(eh);
         self.activity.get_mut(&aid).unwrap().handlers.push(eh);
@@ -107,7 +107,7 @@ impl<'a, E> Handler<'a, E> {
     pub fn add_widget(
         &mut self,
         widget: &impl View,
-        eh: impl FnMut(&Widget, &mut Self) -> Result<(), E> + 'a,
+        eh: impl FnMut(&event::Widget, &mut Self) -> Result<(), E> + 'a,
     ) {
         let aid = widget.get_activity().aid();
         let eh = Box::new(eh);
@@ -127,7 +127,7 @@ impl<'a, E> Handler<'a, E> {
         mut f: impl FnMut(&mut Self) -> Result<(), E> + 'a,
     ) {
         self.add_widget(view, move |w, ehs| {
-            Ok(if let Widget::Click { .. } = w {
+            Ok(if let event::Widget::Click { .. } = w {
                 f(ehs)?
             })
         })
@@ -142,7 +142,7 @@ impl<'a, E> Handler<'a, E> {
     ) {
         view.send_long_click_event(true);
         self.add_widget(view, move |w, ehs| {
-            Ok(if let Widget::LongClick { .. } = w {
+            Ok(if let event::Widget::LongClick { .. } = w {
                 f(ehs)?
             })
         })
@@ -156,7 +156,7 @@ impl<'a, E> Handler<'a, E> {
         mut f: impl FnMut(&mut Self) -> Result<(), E> + 'a,
     ) {
         self.add_widget(&view, move |w, ehs| {
-            Ok(if let Widget::Refresh = w {
+            Ok(if let event::Widget::Refresh = w {
                 f(ehs)?;
                 view.set_refreshing(false);
             })
