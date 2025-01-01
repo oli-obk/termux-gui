@@ -2,6 +2,7 @@ use super::{View, ViewGroup};
 use crate::activity::Activity;
 use serde_json::json;
 
+#[derive(Copy, Clone)]
 pub struct SwipeRefreshLayout<'a> {
     activity: Activity<'a>,
     id: i32,

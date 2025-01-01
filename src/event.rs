@@ -5,11 +5,9 @@ mod handler;
 
 pub use handler::Handler;
 
-pub const LONG_CLICK: &str = "longClick";
 pub const FOCUS_CHANGE: &str = "focusChange";
 pub const KEY: &str = "key";
 pub const TOUCH: &str = "touch";
-pub const REFRESH: &str = "refresh";
 pub const SELECTED: &str = "selected";
 pub const ITEM_SELECTED: &str = "itemselected";
 
@@ -63,6 +61,7 @@ pub enum Widget {
     Text {
         text: String,
     },
+    Refresh,
 }
 
 #[derive(Debug, Deserialize)]

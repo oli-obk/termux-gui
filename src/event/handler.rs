@@ -1,5 +1,6 @@
 use super::{Activity, Event, Widget};
 use crate::activity::Flags;
+use crate::layouts::swipe_refresh_layout::SwipeRefreshLayout;
 use crate::ui::Ui;
 use crate::widgets::View;
 use crate::TGui;
@@ -128,6 +129,21 @@ impl<'a, E> Handler<'a, E> {
         self.add_widget(view, move |w, ehs| {
             Ok(if let Widget::Click { .. } = w {
                 f(ehs)?
+            })
+        })
+    }
+
+    /// Convenience helper for registering a `Refresh` widget event handler.
+    /// Automatically clears the refreshing spinner when the handler finishes.
+    pub fn on_refresh(
+        &mut self,
+        view: SwipeRefreshLayout<'a>,
+        mut f: impl FnMut(&mut Self) -> Result<(), E> + 'a,
+    ) {
+        self.add_widget(&view, move |w, ehs| {
+            Ok(if let Widget::Refresh = w {
+                f(ehs)?;
+                view.set_refreshing(false);
             })
         })
     }
