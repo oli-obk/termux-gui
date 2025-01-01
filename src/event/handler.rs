@@ -134,11 +134,13 @@ impl<'a, E> Handler<'a, E> {
     }
 
     /// Convenience helper for registering a `LongClick { .. }` widget event handler.
+    /// Automatically enables long click events for this widget.
     pub fn on_long_click(
         &mut self,
         view: &impl View,
         mut f: impl FnMut(&mut Self) -> Result<(), E> + 'a,
     ) {
+        view.send_long_click_event(true);
         self.add_widget(view, move |w, ehs| {
             Ok(if let Widget::LongClick { .. } = w {
                 f(ehs)?
