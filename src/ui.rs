@@ -13,6 +13,7 @@ use super::widgets::{
 };
 use crate::TGui;
 
+#[derive(Copy, Clone)]
 pub struct Ui<'a> {
     activity: Activity<'a>,
 }

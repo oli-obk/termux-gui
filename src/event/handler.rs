@@ -11,7 +11,6 @@ type HandlerList<'a, T, E> = Vec<Box<dyn FnMut(&T, &mut Handler<'a, E>) -> Resul
 struct ActivityInfo<'a, E> {
     widget: HashMap<i32, HandlerList<'a, event::Widget, E>>,
     handlers: HandlerList<'a, event::Activity, E>,
-    ui: Ui<'a>,
 }
 
 #[derive(Debug)]
@@ -97,11 +96,15 @@ impl<'a, E> Handler<'a, E> {
 
     pub fn add_activity(
         &mut self,
-        aid: i32,
+        ui: Ui<'a>,
         eh: impl FnMut(&event::Activity, &mut Self) -> Result<(), E> + 'a,
     ) {
         let eh = Box::new(eh);
-        self.activity.get_mut(&aid).unwrap().handlers.push(eh);
+        self.activity
+            .get_mut(&ui.activity().aid())
+            .unwrap()
+            .handlers
+            .push(eh);
     }
 
     pub fn add_widget(
@@ -171,24 +174,16 @@ impl<'a, E> Handler<'a, E> {
     }
 
     /// Creates a new activity to have its events tracked.
-    pub fn new_activity(&mut self, flags: Flags) -> i32 {
+    pub fn new_activity(&mut self, flags: Flags) -> Ui<'a> {
         let ui = self.tgui.ui(flags);
-        let aid = ui.activity().aid();
+
         self.activity.insert(
-            aid,
+            ui.activity().aid(),
             ActivityInfo {
-                ui,
                 handlers: vec![],
                 widget: HashMap::new(),
             },
         );
-        aid
-    }
-}
-
-impl<'a, E> std::ops::Index<i32> for Handler<'a, E> {
-    type Output = Ui<'a>;
-    fn index(&self, aid: i32) -> &Self::Output {
-        &self.activity[&aid].ui
+        ui
     }
 }
