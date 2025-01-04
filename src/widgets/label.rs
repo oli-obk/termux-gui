@@ -3,6 +3,7 @@ use crate::activity::Activity;
 use crate::layouts::Parent;
 use serde_json::json;
 
+#[derive(Copy, Clone)]
 pub struct Label<'a> {
     id: i32,
     activity: Activity<'a>,

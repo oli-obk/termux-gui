@@ -5,6 +5,7 @@ use base64::prelude::*;
 use serde_json::json;
 use std::io::Cursor;
 
+#[derive(Copy, Clone)]
 pub struct ImageView<'a> {
     id: i32,
     activity: Activity<'a>,

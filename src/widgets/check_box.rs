@@ -5,6 +5,7 @@ use crate::activity::Activity;
 use crate::layouts::Parent;
 use serde_json::json;
 
+#[derive(Copy, Clone)]
 pub struct CheckBox<'a> {
     id: i32,
     activity: Activity<'a>,
