@@ -17,6 +17,7 @@ rustix = { version = "0.38.42", features = ["net"], optional = true }
 [features]
 buf = ["dep:rustix"]
 image = ["dep:image", "dep:base64"]
+web = ["dep:base64"]
 
 [lib]
 name = "tgui"

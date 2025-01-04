@@ -11,6 +11,8 @@ use super::widgets::{
     progress_bar::ProgressBar, radio_button::RadioButton, space::Space, spinner::Spinner,
     switch::Switch, toggle_button::ToggleButton,
 };
+#[cfg(feature = "web")]
+use crate::widgets::web_view::WebView;
 
 impl<'a> Activity<'a> {
     pub fn radio_button(self, parent: impl Parent, text: &str, check: bool) -> RadioButton<'a> {
@@ -62,6 +64,11 @@ impl<'a> Activity<'a> {
     #[cfg(feature = "image")]
     pub fn image_view(self, parent: impl Parent) -> ImageView<'a> {
         ImageView::new(self, parent)
+    }
+
+    #[cfg(feature = "web")]
+    pub fn web_view(self, parent: impl Parent) -> WebView<'a> {
+        WebView::new(self, parent)
     }
 
     pub fn spinner(self, parent: impl Parent) -> Spinner<'a> {

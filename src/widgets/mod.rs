@@ -16,6 +16,8 @@ pub mod space;
 pub mod spinner;
 pub mod switch;
 pub mod toggle_button;
+#[cfg(feature = "web")]
+pub mod web_view;
 
 #[derive(Serialize)]
 struct WithId<T: Serialize> {
