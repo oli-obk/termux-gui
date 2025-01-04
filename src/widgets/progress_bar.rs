@@ -1,5 +1,6 @@
 use super::View;
 use crate::activity::Activity;
+use crate::layouts::Parent;
 use serde_json::json;
 
 pub struct ProgressBar<'a> {
@@ -8,10 +9,10 @@ pub struct ProgressBar<'a> {
 }
 
 impl<'a> ProgressBar<'a> {
-    pub fn new(activity: Activity<'a>, parent: Option<i32>) -> Self {
+    pub fn new(activity: Activity<'a>, parent: impl Parent) -> Self {
         let mut args = json!({});
 
-        if let Some(id) = parent {
+        if let Some(id) = parent.id() {
             args["parent"] = json!(id);
         }
 

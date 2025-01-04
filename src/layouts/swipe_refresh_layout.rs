@@ -1,4 +1,4 @@
-use super::{View, ViewGroup};
+use super::{OneChildParent, Parent, View, ViewGroup};
 use crate::activity::Activity;
 use serde_json::json;
 
@@ -9,15 +9,21 @@ pub struct SwipeRefreshLayout<'a> {
 }
 
 impl<'a> SwipeRefreshLayout<'a> {
-    pub fn new(activity: Activity<'a>, parent: Option<i32>) -> Self {
+    pub fn new(activity: Activity<'a>, parent: impl Parent) -> (Self, OneChildParent) {
         let mut args = json!({});
 
-        if let Some(id) = parent {
+        if let Some(id) = parent.id() {
             args["parent"] = json!(id);
         }
         let id = activity.send_recv_msg("createSwipeRefreshLayout", args);
 
-        SwipeRefreshLayout { id, activity }
+        (
+            SwipeRefreshLayout { id, activity },
+            OneChildParent {
+                id,
+                aid: activity.aid(),
+            },
+        )
     }
 
     pub fn set_refreshing(&self, refresh: bool) {

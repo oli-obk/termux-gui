@@ -11,14 +11,14 @@ fn main() {
     };
 
     let ui = tgui.ui(flags);
-    let layout = ui.linear_layout(None, true);
+    let layout = ui.linear_layout(ui.activity(), true);
 
-    let title = ui.default_label(Some(&layout), "Input Demo");
+    let title = ui.default_label(layout, "Input Demo");
     title.set_text_size(30);
 
     title.set_margin(5, None);
 
-    let switch = ui.default_switch(Some(&layout), "Switch");
+    let switch = ui.default_switch(layout, "Switch");
 
     loop {
         match tgui.event().unwrap() {

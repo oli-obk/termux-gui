@@ -1,5 +1,6 @@
 use super::{Color, View};
 use crate::activity::Activity;
+use crate::layouts::Parent;
 use serde_json::json;
 
 pub struct Label<'a> {
@@ -10,7 +11,7 @@ pub struct Label<'a> {
 impl<'a> Label<'a> {
     pub fn new(
         activity: Activity<'a>,
-        parent: Option<i32>,
+        parent: impl Parent,
         text: &str,
         selectable_text: bool,
         clickable_links: bool,
@@ -21,7 +22,7 @@ impl<'a> Label<'a> {
             "clickableLinks": clickable_links
         });
 
-        if let Some(id) = parent {
+        if let Some(id) = parent.id() {
             args["parent"] = json!(id);
         }
 

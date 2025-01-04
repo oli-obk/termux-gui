@@ -1,6 +1,7 @@
 use super::label::TextView;
 use super::View;
 use crate::activity::Activity;
+use crate::layouts::Parent;
 use serde_json::json;
 
 pub struct EditText<'a> {
@@ -11,7 +12,7 @@ pub struct EditText<'a> {
 impl<'a> EditText<'a> {
     pub fn new(
         activity: Activity<'a>,
-        parent: Option<i32>,
+        parent: impl Parent,
         text: &str,
         single_line: bool,
         line: bool,
@@ -26,7 +27,7 @@ impl<'a> EditText<'a> {
             "type": ty
         });
 
-        if let Some(id) = parent {
+        if let Some(id) = parent.id() {
             args["parent"] = json!(id);
         }
 

@@ -1,18 +1,19 @@
 use super::Vec2;
-use super::{View, ViewGroup};
+use super::{Parent, View, ViewGroup};
 use crate::activity::Activity;
 use serde_json::json;
 
+#[derive(Copy, Clone)]
 pub struct TabLayout<'a> {
     activity: Activity<'a>,
     id: i32,
 }
 
 impl<'a> TabLayout<'a> {
-    pub fn new(activity: Activity<'a>, parent: Option<i32>) -> Self {
+    pub fn new(activity: Activity<'a>, parent: impl Parent) -> Self {
         let mut args = json!({});
 
-        if let Some(id) = parent {
+        if let Some(id) = parent.id() {
             args["parent"] = json!(id);
         }
         let id = activity.send_recv_msg("createTabLayout", args);
@@ -53,3 +54,12 @@ impl<'a> View for TabLayout<'a> {
 }
 
 impl<'a> ViewGroup for TabLayout<'a> {}
+
+impl Parent for TabLayout<'_> {
+    fn id(&self) -> Option<i32> {
+        Some(self.id)
+    }
+    fn aid(&self) -> i32 {
+        self.activity.aid()
+    }
+}

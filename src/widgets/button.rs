@@ -1,6 +1,7 @@
 use super::label::TextView;
 use super::View;
 use crate::activity::Activity;
+use crate::layouts::Parent;
 use serde_json::json;
 
 pub struct Button<'a> {
@@ -9,12 +10,12 @@ pub struct Button<'a> {
 }
 
 impl<'a> Button<'a> {
-    pub fn new(activity: Activity<'a>, parent: Option<i32>, text: &str) -> Self {
+    pub fn new(activity: Activity<'a>, parent: impl Parent, text: &str) -> Self {
         let mut args = json!({
             "text": text,
         });
 
-        if let Some(id) = parent {
+        if let Some(id) = parent.id() {
             args["parent"] = json!(id);
         }
 

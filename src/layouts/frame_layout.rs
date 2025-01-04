@@ -1,19 +1,22 @@
-use super::{View, ViewGroup};
+use super::{Parent, View, ViewGroup};
 use crate::activity::Activity;
 use serde_json::json;
 
+#[derive(Copy, Clone)]
 pub struct FrameLayout<'a> {
     activity: Activity<'a>,
     id: i32,
 }
 
 impl<'a> FrameLayout<'a> {
-    pub fn new(activity: Activity<'a>, parent: Option<i32>) -> Self {
+    #[must_use]
+    pub fn new(activity: Activity<'a>, parent: impl Parent) -> Self {
         let mut args = json!({});
 
-        if let Some(id) = parent {
+        if let Some(id) = parent.id() {
             args["parent"] = json!(id);
         }
+        assert_eq!(parent.aid(), activity.aid());
         let id = activity.send_recv_msg("createFrameLayout", args);
 
         FrameLayout { id, activity }
@@ -31,3 +34,12 @@ impl<'a> View for FrameLayout<'a> {
 }
 
 impl<'a> ViewGroup for FrameLayout<'a> {}
+
+impl Parent for FrameLayout<'_> {
+    fn id(&self) -> Option<i32> {
+        Some(self.id)
+    }
+    fn aid(&self) -> i32 {
+        self.activity.aid()
+    }
+}

@@ -14,22 +14,22 @@ fn main() {
 
     let ui = ehs.new_activity(flags);
 
-    let layout = ui.linear_layout(None, true);
+    let layout = ui.linear_layout(ui.activity(), true);
 
-    let title = ui.label(Some(&layout), "Download Video", false, false);
+    let title = ui.label(layout, "Download Video", false, false);
     title.set_text_size(30);
 
     title.set_margin(5, None);
 
-    ui.label(Some(&layout), "Video Link", false, false);
-    ui.edit_text(Some(&layout), "", false, false, false, "text");
+    ui.label(layout, "Video Link", false, false);
+    ui.edit_text(layout, "", false, false, false, "text");
 
-    ui.label(Some(&layout), "File Name", false, false);
-    ui.edit_text(Some(&layout), "", false, false, false, "text");
+    ui.label(layout, "File Name", false, false);
+    ui.edit_text(layout, "", false, false, false, "text");
 
-    let buttons = ui.linear_layout(Some(&layout), false);
-    ui.button(Some(&buttons), "Download");
-    let cancel = ui.button(Some(&buttons), "Cancel");
+    let buttons = ui.linear_layout(layout, false);
+    ui.button(buttons, "Download");
+    let cancel = ui.button(buttons, "Cancel");
 
     ehs.add_widget(&cancel, |kind, _ehs| {
         Ok(if let Click { .. } = kind {

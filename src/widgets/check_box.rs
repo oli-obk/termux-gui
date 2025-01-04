@@ -2,6 +2,7 @@ use super::compound_button::CompoundButton;
 use super::label::TextView;
 use super::View;
 use crate::activity::Activity;
+use crate::layouts::Parent;
 use serde_json::json;
 
 pub struct CheckBox<'a> {
@@ -11,13 +12,13 @@ pub struct CheckBox<'a> {
 }
 
 impl<'a> CheckBox<'a> {
-    pub fn new(activity: Activity<'a>, parent: Option<i32>, text: &str, check: bool) -> Self {
+    pub fn new(activity: Activity<'a>, parent: impl Parent, text: &str, check: bool) -> Self {
         let mut args = json!({
             "text": text,
             "checked": check
         });
 
-        if let Some(id) = parent {
+        if let Some(id) = parent.id() {
             args["parent"] = json!(id);
         }
 

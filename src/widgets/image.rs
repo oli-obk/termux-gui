@@ -1,5 +1,6 @@
 use super::RawFd;
 use super::{send_recv_msg, View};
+use crate::layouts::Parent;
 use base64::prelude::*;
 use serde_json::json;
 use std::io::Cursor;
