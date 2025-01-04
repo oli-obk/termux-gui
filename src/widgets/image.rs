@@ -1,5 +1,5 @@
-use super::RawFd;
-use super::{send_recv_msg, View};
+use super::View;
+use crate::activity::Activity;
 use crate::layouts::Parent;
 use base64::prelude::*;
 use serde_json::json;
@@ -7,21 +7,20 @@ use std::io::Cursor;
 
 pub struct ImageView<'a> {
     id: i32,
-    aid: i32,
-    sock: &'a RawFd,
+    activity: Activity<'a>,
 }
 
 impl<'a> ImageView<'a> {
-    pub fn new(fd: &'a RawFd, aid: i32, parent: Option<i32>) -> Self {
-        let mut args = json!({ "aid": aid });
+    pub fn new(activity: Activity<'a>, parent: impl Parent) -> Self {
+        let mut args = json!({});
 
-        if let Some(id) = parent {
+        if let Some(id) = parent.id() {
             args["parent"] = json!(id);
         }
 
-        let id = send_recv_msg(fd, "createImageView", args);
+        let id = activity.send_recv_msg("createImageView", args);
 
-        ImageView { id, aid, sock: fd }
+        ImageView { id, activity }
     }
 
     pub fn set_image(&self, img: &str) {
@@ -43,11 +42,7 @@ impl<'a> View for ImageView<'a> {
         self.id
     }
 
-    fn get_aid(&self) -> i32 {
-        self.aid
-    }
-
-    fn get_sock(&self) -> &RawFd {
-        self.sock
+    fn get_activity(&self) -> &Activity<'a> {
+        &self.activity
     }
 }
