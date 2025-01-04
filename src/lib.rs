@@ -28,12 +28,8 @@ impl TGui {
         }
     }
 
-    pub fn activity(&self, flags: activity::Flags) -> activity::Activity {
+    pub fn new_activity<'a>(&'a self, flags: activity::Flags) -> activity::Activity<'a> {
         activity::Activity::new(self, flags)
-    }
-
-    pub fn ui(&self, flags: activity::Flags) -> ui::Ui {
-        ui::Ui::new(self, flags)
     }
 
     pub fn event(&self) -> Result<event::Event, serde_json::Error> {

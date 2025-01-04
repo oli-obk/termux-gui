@@ -1,7 +1,6 @@
-use crate::activity::Flags;
+use crate::activity::{Activity, Flags};
 use crate::event::{self, Event};
 use crate::layouts::swipe_refresh_layout::SwipeRefreshLayout;
-use crate::ui::Ui;
 use crate::widgets::View;
 use crate::TGui;
 use std::collections::HashMap;
@@ -96,12 +95,12 @@ impl<'a, E> Handler<'a, E> {
 
     pub fn add_activity(
         &mut self,
-        ui: Ui<'a>,
+        activity: Activity<'a>,
         eh: impl FnMut(&event::Activity, &mut Self) -> Result<(), E> + 'a,
     ) {
         let eh = Box::new(eh);
         self.activity
-            .get_mut(&ui.activity().aid())
+            .get_mut(&activity.aid())
             .unwrap()
             .handlers
             .push(eh);
@@ -174,16 +173,16 @@ impl<'a, E> Handler<'a, E> {
     }
 
     /// Creates a new activity to have its events tracked.
-    pub fn new_activity(&mut self, flags: Flags) -> Ui<'a> {
-        let ui = self.tgui.ui(flags);
+    pub fn new_activity(&mut self, flags: Flags) -> Activity<'a> {
+        let activity = self.tgui.new_activity(flags);
 
         self.activity.insert(
-            ui.activity().aid(),
+            activity.aid(),
             ActivityInfo {
                 handlers: vec![],
                 widget: HashMap::new(),
             },
         );
-        ui
+        activity
     }
 }

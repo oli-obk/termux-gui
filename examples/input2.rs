@@ -10,8 +10,8 @@ fn main() {
         ..Default::default()
     };
 
-    let ui = tgui.ui(flags);
-    let layout = ui.linear_layout(ui.activity(), true);
+    let ui = tgui.new_activity(flags);
+    let layout = ui.linear_layout(ui, true);
 
     let title = ui.default_label(layout, "Input Demo");
     title.set_text_size(30);

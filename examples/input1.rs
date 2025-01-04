@@ -14,7 +14,7 @@ fn main() {
 
     let ui = ehs.new_activity(flags);
 
-    let layout = ui.linear_layout(ui.activity(), true);
+    let layout = ui.linear_layout(ui, true);
 
     let title = ui.label(layout, "Download Video", false, false);
     title.set_text_size(30);
