@@ -31,7 +31,7 @@ fn main() {
     ui.button(buttons, "Download");
     let cancel = ui.button(buttons, "Cancel");
 
-    ehs.add_widget(&cancel, |kind, _ehs| {
+    ehs.add_widget(cancel, |kind, _ehs| {
         Ok(if let Click { .. } = kind {
             ui.finish()
         })
