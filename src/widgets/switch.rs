@@ -9,7 +9,6 @@ use serde_json::json;
 pub struct Switch<'a> {
     id: i32,
     activity: Activity<'a>,
-    check: bool,
 }
 
 impl<'a> Switch<'a> {
@@ -25,21 +24,13 @@ impl<'a> Switch<'a> {
 
         let id = activity.send_recv_msg("createSwitch", args);
 
-        Switch {
-            id,
-            activity,
-            check,
-        }
+        Switch { id, activity }
     }
 }
 
 impl<'a> TextView for Switch<'a> {}
 
-impl<'a> CompoundButton for Switch<'a> {
-    fn check(&mut self, set: bool) {
-        self.check = set;
-    }
-}
+impl<'a> CompoundButton for Switch<'a> {}
 
 impl<'a> View for Switch<'a> {
     fn get_id(&self) -> i32 {

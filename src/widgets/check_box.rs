@@ -9,7 +9,6 @@ use serde_json::json;
 pub struct CheckBox<'a> {
     id: i32,
     activity: Activity<'a>,
-    check: bool,
 }
 
 impl<'a> CheckBox<'a> {
@@ -25,21 +24,13 @@ impl<'a> CheckBox<'a> {
 
         let id = activity.send_recv_msg("createCheckBox", args);
 
-        CheckBox {
-            id,
-            activity,
-            check,
-        }
+        CheckBox { id, activity }
     }
 }
 
 impl<'a> TextView for CheckBox<'a> {}
 
-impl<'a> CompoundButton for CheckBox<'a> {
-    fn check(&mut self, set: bool) {
-        self.check = set;
-    }
-}
+impl<'a> CompoundButton for CheckBox<'a> {}
 
 impl<'a> View for CheckBox<'a> {
     fn get_id(&self) -> i32 {

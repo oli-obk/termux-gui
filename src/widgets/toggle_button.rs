@@ -9,7 +9,6 @@ use serde_json::json;
 pub struct ToggleButton<'a> {
     id: i32,
     activity: Activity<'a>,
-    check: bool,
 }
 
 impl<'a> ToggleButton<'a> {
@@ -24,21 +23,13 @@ impl<'a> ToggleButton<'a> {
         }
 
         let id = activity.send_recv_msg("createToggleButton", args);
-        ToggleButton {
-            id,
-            activity,
-            check,
-        }
+        ToggleButton { id, activity }
     }
 }
 
 impl<'a> TextView for ToggleButton<'a> {}
 
-impl<'a> CompoundButton for ToggleButton<'a> {
-    fn check(&mut self, set: bool) {
-        self.check = set;
-    }
-}
+impl<'a> CompoundButton for ToggleButton<'a> {}
 
 impl<'a> View for ToggleButton<'a> {
     fn get_id(&self) -> i32 {

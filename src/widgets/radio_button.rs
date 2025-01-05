@@ -9,7 +9,6 @@ use serde_json::json;
 pub struct RadioButton<'a> {
     id: i32,
     activity: Activity<'a>,
-    check: bool,
 }
 
 impl<'a> RadioButton<'a> {
@@ -25,21 +24,13 @@ impl<'a> RadioButton<'a> {
 
         let id = activity.send_recv_msg("createRadioButton", args);
 
-        RadioButton {
-            id,
-            activity,
-            check,
-        }
+        RadioButton { id, activity }
     }
 }
 
 impl<'a> TextView for RadioButton<'a> {}
 
-impl<'a> CompoundButton for RadioButton<'a> {
-    fn check(&mut self, set: bool) {
-        self.check = set;
-    }
-}
+impl<'a> CompoundButton for RadioButton<'a> {}
 
 impl<'a> View for RadioButton<'a> {
     fn get_id(&self) -> i32 {
