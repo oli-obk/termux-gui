@@ -12,26 +12,27 @@ fn main() {
 
     let mut ehs: Handler = Handler::new(&tgui);
 
-    let ui = ehs.new_activity(flags);
+    ehs.new_activity(flags, |ui, ehs| {
+        let layout = ui.linear_layout(ui, true);
 
-    let layout = ui.linear_layout(ui, true);
+        let title = ui.label(layout, "Download Video", false, false);
+        title.set_text_size(30);
 
-    let title = ui.label(layout, "Download Video", false, false);
-    title.set_text_size(30);
+        title.set_margin(5, None);
 
-    title.set_margin(5, None);
+        ui.label(layout, "Video Link", false, false);
+        ui.edit_text(layout, "", false, false, false, "text");
 
-    ui.label(layout, "Video Link", false, false);
-    ui.edit_text(layout, "", false, false, false, "text");
+        ui.label(layout, "File Name", false, false);
+        ui.edit_text(layout, "", false, false, false, "text");
 
-    ui.label(layout, "File Name", false, false);
-    ui.edit_text(layout, "", false, false, false, "text");
+        let buttons = ui.linear_layout(layout, false);
+        ui.button(buttons, "Download");
+        let cancel = ui.button(buttons, "Cancel");
 
-    let buttons = ui.linear_layout(layout, false);
-    ui.button(buttons, "Download");
-    let cancel = ui.button(buttons, "Cancel");
-
-    ehs.on_click(cancel, |_ehs| Ok(ui.finish()));
+        ehs.on_click(cancel, move |_ehs| Ok(ui.finish()));
+        Ok(())
+    });
 
     ehs.handle_all_events().unwrap();
 }

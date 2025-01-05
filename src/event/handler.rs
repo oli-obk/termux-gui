@@ -173,7 +173,13 @@ impl<'a, E> Handler<'a, E> {
     }
 
     /// Creates a new activity to have its events tracked.
-    pub fn new_activity(&mut self, flags: Flags) -> Activity<'a> {
+    /// The closure is invoked whenever the activity is (re)created by android.
+    /// This happens once at the start and whenever android moves the app far into the background.
+    pub fn new_activity(
+        &mut self,
+        flags: Flags,
+        mut f: impl FnMut(Activity<'a>, &mut Self) -> Result<(), E> + 'a,
+    ) {
         let activity = self.tgui.new_activity(flags);
 
         self.activity.insert(
@@ -183,6 +189,10 @@ impl<'a, E> Handler<'a, E> {
                 widget: HashMap::new(),
             },
         );
-        activity
+        self.add_activity(activity, move |a, ehs| {
+            Ok(if let event::Activity::Create = a {
+                f(activity, ehs)?
+            })
+        });
     }
 }
