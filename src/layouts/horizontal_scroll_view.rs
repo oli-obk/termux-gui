@@ -48,7 +48,7 @@ impl<'a> HorizontalScrollView<'a> {
     }
 }
 
-impl<'a> View for HorizontalScrollView<'a> {
+impl<'a> View<'a> for HorizontalScrollView<'a> {
     fn get_id(&self) -> i32 {
         self.id
     }
@@ -58,4 +58,4 @@ impl<'a> View for HorizontalScrollView<'a> {
     }
 }
 
-impl<'a> ViewGroup for HorizontalScrollView<'a> {}
+impl<'a> ViewGroup<'a> for HorizontalScrollView<'a> {}

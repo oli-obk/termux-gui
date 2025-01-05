@@ -108,7 +108,7 @@ impl<'a, E> Handler<'a, E> {
 
     pub fn add_widget(
         &mut self,
-        widget: impl View,
+        widget: impl View<'a>,
         eh: impl FnMut(&event::Widget, &mut Self) -> Result<(), E> + 'a,
     ) {
         let aid = widget.get_activity().aid();
@@ -125,7 +125,7 @@ impl<'a, E> Handler<'a, E> {
     /// Convenience helper for registering a `Click { .. }` widget event handler.
     pub fn on_click(
         &mut self,
-        view: impl View,
+        view: impl View<'a>,
         mut f: impl FnMut(&mut Self) -> Result<(), E> + 'a,
     ) {
         self.add_widget(view, move |w, ehs| {
@@ -139,7 +139,7 @@ impl<'a, E> Handler<'a, E> {
     /// Automatically enables long click events for this widget.
     pub fn on_long_click(
         &mut self,
-        view: impl View,
+        view: impl View<'a>,
         mut f: impl FnMut(&mut Self) -> Result<(), E> + 'a,
     ) {
         view.send_long_click_event(true);

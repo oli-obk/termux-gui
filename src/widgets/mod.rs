@@ -27,14 +27,14 @@ struct WithId<T: Serialize> {
     params: T,
 }
 
-pub trait View {
+pub trait View<'a> {
     fn get_id(&self) -> i32;
-    fn get_activity(&self) -> Activity<'_>;
+    fn get_activity(&self) -> Activity<'a>;
 
     fn send_recv_msg<T>(&self, method: &str, params: impl Serialize) -> T
     where
         Self: Sized,
-        T: for<'a> Deserialize<'a>,
+        T: for<'b> Deserialize<'b>,
     {
         self.get_activity().send_recv_msg(
             method,

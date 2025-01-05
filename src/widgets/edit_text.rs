@@ -45,9 +45,9 @@ impl<'a> EditText<'a> {
     }
 }
 
-impl<'a> TextView for EditText<'a> {}
+impl<'a> TextView<'a> for EditText<'a> {}
 
-impl<'a> View for EditText<'a> {
+impl<'a> View<'a> for EditText<'a> {
     fn get_id(&self) -> i32 {
         self.id
     }

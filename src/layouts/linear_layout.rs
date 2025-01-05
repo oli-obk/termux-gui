@@ -23,7 +23,7 @@ impl<'a> LinearLayout<'a> {
     }
 }
 
-impl<'a> View for LinearLayout<'a> {
+impl<'a> View<'a> for LinearLayout<'a> {
     fn get_id(&self) -> i32 {
         self.id
     }
@@ -33,7 +33,7 @@ impl<'a> View for LinearLayout<'a> {
     }
 }
 
-impl<'a> ViewGroup for LinearLayout<'a> {}
+impl<'a> ViewGroup<'a> for LinearLayout<'a> {}
 
 impl Parent for LinearLayout<'_> {
     fn id(&self) -> Option<i32> {

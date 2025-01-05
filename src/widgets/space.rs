@@ -23,7 +23,7 @@ impl<'a> Space<'a> {
     }
 }
 
-impl<'a> View for Space<'a> {
+impl<'a> View<'a> for Space<'a> {
     fn get_id(&self) -> i32 {
         self.id
     }

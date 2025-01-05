@@ -9,7 +9,7 @@ pub mod radio_group;
 pub mod swipe_refresh_layout;
 pub mod tab_layout;
 
-pub trait ViewGroup: View + Sized + Copy {
+pub trait ViewGroup<'a>: View<'a> + Sized + Copy {
     fn clear_children(&self) -> OneChildParent {
         self.send_msg("deleteChildren", ());
         OneChildParent {

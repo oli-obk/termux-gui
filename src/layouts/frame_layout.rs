@@ -23,17 +23,17 @@ impl<'a> FrameLayout<'a> {
     }
 }
 
-impl<'a> View for FrameLayout<'a> {
+impl<'a> View<'a> for FrameLayout<'a> {
     fn get_id(&self) -> i32 {
         self.id
     }
 
-    fn get_activity(&self) -> Activity<'_> {
+    fn get_activity(&self) -> Activity<'a> {
         self.activity
     }
 }
 
-impl<'a> ViewGroup for FrameLayout<'a> {}
+impl<'a> ViewGroup<'a> for FrameLayout<'a> {}
 
 impl Parent for FrameLayout<'_> {
     fn id(&self) -> Option<i32> {

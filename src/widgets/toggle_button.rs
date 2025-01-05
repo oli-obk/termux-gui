@@ -27,16 +27,16 @@ impl<'a> ToggleButton<'a> {
     }
 }
 
-impl<'a> TextView for ToggleButton<'a> {}
+impl<'a> TextView<'a> for ToggleButton<'a> {}
 
-impl<'a> CompoundButton for ToggleButton<'a> {}
+impl<'a> CompoundButton<'a> for ToggleButton<'a> {}
 
-impl<'a> View for ToggleButton<'a> {
+impl<'a> View<'a> for ToggleButton<'a> {
     fn get_id(&self) -> i32 {
         self.id
     }
 
-    fn get_activity(&self) -> Activity {
+    fn get_activity(&self) -> Activity<'a> {
         self.activity
     }
 }

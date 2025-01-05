@@ -28,16 +28,16 @@ impl<'a> Switch<'a> {
     }
 }
 
-impl<'a> TextView for Switch<'a> {}
+impl<'a> TextView<'a> for Switch<'a> {}
 
-impl<'a> CompoundButton for Switch<'a> {}
+impl<'a> CompoundButton<'a> for Switch<'a> {}
 
-impl<'a> View for Switch<'a> {
+impl<'a> View<'a> for Switch<'a> {
     fn get_id(&self) -> i32 {
         self.id
     }
 
-    fn get_activity(&self) -> Activity {
+    fn get_activity(&self) -> Activity<'a> {
         self.activity
     }
 }

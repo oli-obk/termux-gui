@@ -21,7 +21,7 @@ impl<'a> RadioGroup<'a> {
     }
 }
 
-impl<'a> View for RadioGroup<'a> {
+impl<'a> View<'a> for RadioGroup<'a> {
     fn get_id(&self) -> i32 {
         self.id
     }
@@ -31,7 +31,7 @@ impl<'a> View for RadioGroup<'a> {
     }
 }
 
-impl<'a> ViewGroup for RadioGroup<'a> {}
+impl<'a> ViewGroup<'a> for RadioGroup<'a> {}
 
 impl Parent for RadioGroup<'_> {
     fn id(&self) -> Option<i32> {

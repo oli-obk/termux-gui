@@ -18,9 +18,9 @@ impl<'a> Button<'a> {
     }
 }
 
-impl<'a> TextView for Button<'a> {}
+impl<'a> TextView<'a> for Button<'a> {}
 
-impl<'a> View for Button<'a> {
+impl<'a> View<'a> for Button<'a> {
     fn get_id(&self) -> i32 {
         self.0.id
     }

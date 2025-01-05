@@ -38,7 +38,7 @@ impl<'a> ImageView<'a> {
     }
 }
 
-impl<'a> View for ImageView<'a> {
+impl<'a> View<'a> for ImageView<'a> {
     fn get_id(&self) -> i32 {
         self.id
     }

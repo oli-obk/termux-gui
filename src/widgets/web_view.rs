@@ -41,7 +41,7 @@ impl<'a> WebView<'a> {
     }
 }
 
-impl<'a> View for WebView<'a> {
+impl<'a> View<'a> for WebView<'a> {
     fn get_id(&self) -> i32 {
         self.id
     }

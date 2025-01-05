@@ -33,7 +33,7 @@ impl<'a> Label<'a> {
     }
 }
 
-pub trait TextView: View + Sized {
+pub trait TextView<'a>: View<'a> + Sized {
     fn set_text_size(&self, size: u8) {
         let args = json!({
             "size": size
@@ -71,9 +71,9 @@ pub trait TextView: View + Sized {
     }
 }
 
-impl TextView for Label<'_> {}
+impl<'a> TextView<'a> for Label<'a> {}
 
-impl<'a> View for Label<'a> {
+impl<'a> View<'a> for Label<'a> {
     fn get_id(&self) -> i32 {
         self.id
     }

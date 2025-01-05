@@ -34,7 +34,7 @@ impl<'a> SwipeRefreshLayout<'a> {
     }
 }
 
-impl<'a> View for SwipeRefreshLayout<'a> {
+impl<'a> View<'a> for SwipeRefreshLayout<'a> {
     fn get_id(&self) -> i32 {
         self.id
     }
@@ -44,4 +44,4 @@ impl<'a> View for SwipeRefreshLayout<'a> {
     }
 }
 
-impl<'a> ViewGroup for SwipeRefreshLayout<'a> {}
+impl<'a> ViewGroup<'a> for SwipeRefreshLayout<'a> {}

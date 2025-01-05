@@ -28,7 +28,7 @@ impl<'a> ProgressBar<'a> {
     }
 }
 
-impl<'a> View for ProgressBar<'a> {
+impl<'a> View<'a> for ProgressBar<'a> {
     fn get_id(&self) -> i32 {
         self.id
     }

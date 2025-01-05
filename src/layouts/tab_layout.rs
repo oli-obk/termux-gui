@@ -43,7 +43,7 @@ impl<'a> TabLayout<'a> {
     }
 }
 
-impl<'a> View for TabLayout<'a> {
+impl<'a> View<'a> for TabLayout<'a> {
     fn get_id(&self) -> i32 {
         self.id
     }
@@ -53,7 +53,7 @@ impl<'a> View for TabLayout<'a> {
     }
 }
 
-impl<'a> ViewGroup for TabLayout<'a> {}
+impl<'a> ViewGroup<'a> for TabLayout<'a> {}
 
 impl Parent for TabLayout<'_> {
     fn id(&self) -> Option<i32> {

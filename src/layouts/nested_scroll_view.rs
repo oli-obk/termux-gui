@@ -48,7 +48,7 @@ impl<'a> NestedScrollView<'a> {
     }
 }
 
-impl<'a> View for NestedScrollView<'a> {
+impl<'a> View<'a> for NestedScrollView<'a> {
     fn get_id(&self) -> i32 {
         self.id
     }
@@ -58,4 +58,4 @@ impl<'a> View for NestedScrollView<'a> {
     }
 }
 
-impl<'a> ViewGroup for NestedScrollView<'a> {}
+impl<'a> ViewGroup<'a> for NestedScrollView<'a> {}

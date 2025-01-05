@@ -30,7 +30,7 @@ impl<'a> Spinner<'a> {
     }
 }
 
-impl<'a> View for Spinner<'a> {
+impl<'a> View<'a> for Spinner<'a> {
     fn get_id(&self) -> i32 {
         self.id
     }

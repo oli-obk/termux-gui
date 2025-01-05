@@ -28,11 +28,11 @@ impl<'a> CheckBox<'a> {
     }
 }
 
-impl<'a> TextView for CheckBox<'a> {}
+impl<'a> TextView<'a> for CheckBox<'a> {}
 
-impl<'a> CompoundButton for CheckBox<'a> {}
+impl<'a> CompoundButton<'a> for CheckBox<'a> {}
 
-impl<'a> View for CheckBox<'a> {
+impl<'a> View<'a> for CheckBox<'a> {
     fn get_id(&self) -> i32 {
         self.id
     }

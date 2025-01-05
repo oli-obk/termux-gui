@@ -28,11 +28,11 @@ impl<'a> RadioButton<'a> {
     }
 }
 
-impl<'a> TextView for RadioButton<'a> {}
+impl<'a> TextView<'a> for RadioButton<'a> {}
 
-impl<'a> CompoundButton for RadioButton<'a> {}
+impl<'a> CompoundButton<'a> for RadioButton<'a> {}
 
-impl<'a> View for RadioButton<'a> {
+impl<'a> View<'a> for RadioButton<'a> {
     fn get_id(&self) -> i32 {
         self.id
     }
