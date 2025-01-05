@@ -1,5 +1,6 @@
 use super::utils::{Color, Vec2};
 use crate::activity::Activity;
+use crate::layouts::Parent;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -203,5 +204,38 @@ pub trait View {
         });
 
         self.send_msg("requestFocus", args);
+    }
+}
+
+#[derive(Copy, Clone)]
+struct Widget<'a> {
+    id: i32,
+    activity: Activity<'a>,
+}
+
+impl<'a> Widget<'a> {
+    pub fn new(
+        activity: Activity<'a>,
+        name: &str,
+        parent: impl Parent,
+        args: &impl Serialize,
+    ) -> Self {
+        #[derive(Serialize)]
+        struct Args<T: Serialize> {
+            #[serde(skip_serializing_if = "Option::is_none")]
+            parent: Option<i32>,
+            #[serde(flatten)]
+            args: T,
+        }
+
+        let id = activity.send_recv_msg(
+            &format!("create{name}"),
+            Args {
+                parent: parent.id(),
+                args,
+            },
+        );
+
+        Self { id, activity }
     }
 }

@@ -1,28 +1,20 @@
 use super::label::TextView;
 use super::View;
+use super::Widget;
 use crate::activity::Activity;
 use crate::layouts::Parent;
 use serde_json::json;
 
 #[derive(Copy, Clone)]
-pub struct Button<'a> {
-    id: i32,
-    activity: Activity<'a>,
-}
+pub struct Button<'a>(Widget<'a>);
 
 impl<'a> Button<'a> {
     pub fn new(activity: Activity<'a>, parent: impl Parent, text: &str) -> Self {
-        let mut args = json!({
+        let args = json!({
             "text": text,
         });
 
-        if let Some(id) = parent.id() {
-            args["parent"] = json!(id);
-        }
-
-        let id = activity.send_recv_msg("createButton", args);
-
-        Button { id, activity }
+        Button(Widget::new(activity, "Button", parent, &args))
     }
 }
 
@@ -30,10 +22,10 @@ impl<'a> TextView for Button<'a> {}
 
 impl<'a> View for Button<'a> {
     fn get_id(&self) -> i32 {
-        self.id
+        self.0.id
     }
 
     fn get_activity(&self) -> &Activity<'a> {
-        &self.activity
+        &self.0.activity
     }
 }
