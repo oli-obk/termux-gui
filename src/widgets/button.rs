@@ -25,7 +25,7 @@ impl<'a> View for Button<'a> {
         self.0.id
     }
 
-    fn get_activity(&self) -> &Activity<'a> {
-        &self.0.activity
+    fn get_activity(&self) -> Activity<'a> {
+        self.0.activity
     }
 }

@@ -37,7 +37,7 @@ impl<'a> View for Switch<'a> {
         self.id
     }
 
-    fn get_activity(&self) -> &Activity {
-        &self.activity
+    fn get_activity(&self) -> Activity {
+        self.activity
     }
 }

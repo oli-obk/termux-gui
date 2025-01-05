@@ -39,8 +39,8 @@ impl<'a> View for SwipeRefreshLayout<'a> {
         self.id
     }
 
-    fn get_activity(&self) -> &Activity<'a> {
-        &self.activity
+    fn get_activity(&self) -> Activity<'a> {
+        self.activity
     }
 }
 

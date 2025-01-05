@@ -28,7 +28,7 @@ impl<'a> View for Space<'a> {
         self.id
     }
 
-    fn get_activity(&self) -> &Activity<'a> {
-        &self.activity
+    fn get_activity(&self) -> Activity<'a> {
+        self.activity
     }
 }

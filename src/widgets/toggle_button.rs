@@ -36,7 +36,7 @@ impl<'a> View for ToggleButton<'a> {
         self.id
     }
 
-    fn get_activity(&self) -> &Activity {
-        &self.activity
+    fn get_activity(&self) -> Activity {
+        self.activity
     }
 }

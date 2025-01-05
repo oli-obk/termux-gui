@@ -28,8 +28,8 @@ impl<'a> View for FrameLayout<'a> {
         self.id
     }
 
-    fn get_activity(&self) -> &Activity<'a> {
-        &self.activity
+    fn get_activity(&self) -> Activity<'_> {
+        self.activity
     }
 }
 
