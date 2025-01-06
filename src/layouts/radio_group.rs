@@ -9,7 +9,7 @@ pub struct RadioGroup<'a> {
 }
 
 impl<'a> RadioGroup<'a> {
-    pub fn new(activity: Activity<'a>, parent: impl Parent) -> Self {
+    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>) -> Self {
         let mut args = json!({});
 
         if let Some(id) = parent.id() {
@@ -33,7 +33,7 @@ impl<'a> View<'a> for RadioGroup<'a> {
 
 impl<'a> ViewGroup<'a> for RadioGroup<'a> {}
 
-impl Parent for RadioGroup<'_> {
+impl Parent<'_> for RadioGroup<'_> {
     fn id(&self) -> Option<i32> {
         Some(self.id)
     }

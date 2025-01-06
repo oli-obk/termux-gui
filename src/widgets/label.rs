@@ -12,7 +12,7 @@ pub struct Label<'a> {
 impl<'a> Label<'a> {
     pub fn new(
         activity: Activity<'a>,
-        parent: impl Parent,
+        parent: impl Parent<'a>,
         text: &str,
         selectable_text: bool,
         clickable_links: bool,

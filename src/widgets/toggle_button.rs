@@ -12,7 +12,7 @@ pub struct ToggleButton<'a> {
 }
 
 impl<'a> ToggleButton<'a> {
-    pub fn new(activity: Activity<'a>, parent: impl Parent, text: &str, check: bool) -> Self {
+    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>, text: &str, check: bool) -> Self {
         let mut args = json!({
             "text": text,
             "checked": check

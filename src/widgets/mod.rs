@@ -217,7 +217,7 @@ impl<'a> Widget<'a> {
     pub fn new(
         activity: Activity<'a>,
         name: &str,
-        parent: impl Parent,
+        parent: impl Parent<'a>,
         args: &impl Serialize,
     ) -> Self {
         #[derive(Serialize)]

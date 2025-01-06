@@ -10,7 +10,7 @@ pub struct FrameLayout<'a> {
 
 impl<'a> FrameLayout<'a> {
     #[must_use]
-    pub fn new(activity: Activity<'a>, parent: impl Parent) -> Self {
+    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>) -> Self {
         let mut args = json!({});
 
         if let Some(id) = parent.id() {
@@ -35,7 +35,7 @@ impl<'a> View<'a> for FrameLayout<'a> {
 
 impl<'a> ViewGroup<'a> for FrameLayout<'a> {}
 
-impl Parent for FrameLayout<'_> {
+impl Parent<'_> for FrameLayout<'_> {
     fn id(&self) -> Option<i32> {
         Some(self.id)
     }

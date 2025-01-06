@@ -10,7 +10,7 @@ pub struct Spinner<'a> {
 }
 
 impl<'a> Spinner<'a> {
-    pub fn new(activity: Activity<'a>, parent: impl Parent) -> Self {
+    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>) -> Self {
         let mut args = json!({});
 
         if let Some(id) = parent.id() {

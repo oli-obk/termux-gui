@@ -9,7 +9,7 @@ use serde_json::json;
 pub struct Button<'a>(Widget<'a>);
 
 impl<'a> Button<'a> {
-    pub fn new(activity: Activity<'a>, parent: impl Parent, text: &str) -> Self {
+    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>, text: &str) -> Self {
         let args = json!({
             "text": text,
         });

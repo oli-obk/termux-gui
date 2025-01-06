@@ -12,7 +12,7 @@ pub struct NestedScrollView<'a> {
 impl<'a> NestedScrollView<'a> {
     pub fn new(
         activity: Activity<'a>,
-        parent: impl Parent,
+        parent: impl Parent<'a>,
         fill_viewport: bool,
         snapping: bool,
         no_bar: bool,

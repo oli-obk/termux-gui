@@ -10,7 +10,7 @@ pub struct TabLayout<'a> {
 }
 
 impl<'a> TabLayout<'a> {
-    pub fn new(activity: Activity<'a>, parent: impl Parent) -> Self {
+    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>) -> Self {
         let mut args = json!({});
 
         if let Some(id) = parent.id() {
@@ -55,7 +55,7 @@ impl<'a> View<'a> for TabLayout<'a> {
 
 impl<'a> ViewGroup<'a> for TabLayout<'a> {}
 
-impl Parent for TabLayout<'_> {
+impl Parent<'_> for TabLayout<'_> {
     fn id(&self) -> Option<i32> {
         Some(self.id)
     }

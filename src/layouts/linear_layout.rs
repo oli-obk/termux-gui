@@ -9,7 +9,7 @@ pub struct LinearLayout<'a> {
 }
 
 impl<'a> LinearLayout<'a> {
-    pub fn new(activity: Activity<'a>, parent: impl Parent, vertical: bool) -> Self {
+    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>, vertical: bool) -> Self {
         let mut args = json!({
             "vertical": vertical
         });
@@ -35,7 +35,7 @@ impl<'a> View<'a> for LinearLayout<'a> {
 
 impl<'a> ViewGroup<'a> for LinearLayout<'a> {}
 
-impl Parent for LinearLayout<'_> {
+impl Parent<'_> for LinearLayout<'_> {
     fn id(&self) -> Option<i32> {
         Some(self.id)
     }

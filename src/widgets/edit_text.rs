@@ -13,7 +13,7 @@ pub struct EditText<'a> {
 impl<'a> EditText<'a> {
     pub fn new(
         activity: Activity<'a>,
-        parent: impl Parent,
+        parent: impl Parent<'a>,
         text: &str,
         single_line: bool,
         line: bool,

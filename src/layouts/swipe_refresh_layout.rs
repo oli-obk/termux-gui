@@ -9,7 +9,7 @@ pub struct SwipeRefreshLayout<'a> {
 }
 
 impl<'a> SwipeRefreshLayout<'a> {
-    pub fn new(activity: Activity<'a>, parent: impl Parent) -> (Self, OneChildParent) {
+    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>) -> (Self, OneChildParent) {
         let mut args = json!({});
 
         if let Some(id) = parent.id() {

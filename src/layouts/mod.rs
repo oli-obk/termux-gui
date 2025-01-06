@@ -19,7 +19,7 @@ pub trait ViewGroup<'a>: View<'a> + Sized + Copy {
     }
 }
 
-pub trait Parent {
+pub trait Parent<'a> {
     fn id(&self) -> Option<i32>;
     fn aid(&self) -> i32;
 }
@@ -31,7 +31,7 @@ pub struct OneChildParent {
     id: i32,
 }
 
-impl Parent for OneChildParent {
+impl Parent<'_> for OneChildParent {
     fn id(&self) -> Option<i32> {
         Some(self.id)
     }
@@ -40,7 +40,7 @@ impl Parent for OneChildParent {
     }
 }
 
-impl Parent for crate::activity::Activity<'_> {
+impl Parent<'_> for crate::activity::Activity<'_> {
     fn id(&self) -> Option<i32> {
         None
     }
