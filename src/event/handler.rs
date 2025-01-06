@@ -172,6 +172,10 @@ impl<'a, E> Handler<'a, E> {
         }
     }
 
+    pub fn tgui(&self) -> &'a TGui {
+        &self.tgui
+    }
+
     /// Creates a new activity to have its events tracked.
     /// The closure is invoked whenever the activity is (re)created by android.
     /// This happens once at the start and whenever android moves the app far into the background.
