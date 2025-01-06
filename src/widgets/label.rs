@@ -1,13 +1,12 @@
+use std::ops::Deref;
+use crate::widgets::Widget;
 use super::{Color, View};
 use crate::activity::Activity;
 use crate::layouts::Parent;
 use serde_json::json;
 
 #[derive(Copy, Clone)]
-pub struct Label<'a> {
-    id: i32,
-    activity: Activity<'a>,
-}
+pub struct Label<'a>(Widget<'a>);
 
 impl<'a> Label<'a> {
     pub fn new(
@@ -17,19 +16,12 @@ impl<'a> Label<'a> {
         selectable_text: bool,
         clickable_links: bool,
     ) -> Self {
-        let mut args = json!({
+        let args = json!({
             "text": text,
             "selectableText": selectable_text,
             "clickableLinks": clickable_links
         });
-
-        if let Some(id) = parent.id() {
-            args["parent"] = json!(id);
-        }
-
-        let id = activity.send_recv_msg("createTextView", args);
-
-        Label { id, activity }
+        Label(Widget::new(activity, "TextView", parent, args))
     }
 }
 
@@ -73,12 +65,9 @@ pub trait TextView<'a>: View<'a> + Sized {
 
 impl<'a> TextView<'a> for Label<'a> {}
 
-impl<'a> View<'a> for Label<'a> {
-    fn get_id(&self) -> i32 {
-        self.id
-    }
-
-    fn get_activity(&self) -> Activity<'a> {
-        self.activity
+impl<'a> Deref for Label<'a> {
+    type Target = Widget<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }

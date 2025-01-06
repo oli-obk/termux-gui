@@ -1,27 +1,18 @@
 use super::View;
 use crate::activity::Activity;
 use crate::layouts::Parent;
+use crate::widgets::Widget;
 use base64::prelude::*;
 use serde_json::json;
 use std::io::Cursor;
+use std::ops::Deref;
 
 #[derive(Copy, Clone)]
-pub struct ImageView<'a> {
-    id: i32,
-    activity: Activity<'a>,
-}
+pub struct ImageView<'a>(Widget<'a>);
 
 impl<'a> ImageView<'a> {
     pub fn new(activity: Activity<'a>, parent: impl Parent<'a>) -> Self {
-        let mut args = json!({});
-
-        if let Some(id) = parent.id() {
-            args["parent"] = json!(id);
-        }
-
-        let id = activity.send_recv_msg("createImageView", args);
-
-        ImageView { id, activity }
+        ImageView(Widget::new(activity, "ImageView", parent, ()))
     }
 
     pub fn set_image(&self, img: &str) {
@@ -38,12 +29,9 @@ impl<'a> ImageView<'a> {
     }
 }
 
-impl<'a> View<'a> for ImageView<'a> {
-    fn get_id(&self) -> i32 {
-        self.id
-    }
-
-    fn get_activity(&self) -> Activity<'a> {
-        self.activity
+impl<'a> Deref for ImageView<'a> {
+    type Target = Widget<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }

@@ -3,6 +3,7 @@ use crate::activity::Activity;
 use crate::layouts::Parent;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use std::ops::Deref;
 
 pub mod button;
 pub mod check_box;
@@ -208,7 +209,7 @@ pub trait View<'a> {
 }
 
 #[derive(Copy, Clone)]
-struct Widget<'a> {
+pub struct Widget<'a> {
     id: i32,
     activity: Activity<'a>,
 }
@@ -218,7 +219,7 @@ impl<'a> Widget<'a> {
         activity: Activity<'a>,
         name: &str,
         parent: impl Parent<'a>,
-        args: &impl Serialize,
+        args: impl Serialize,
     ) -> Self {
         #[derive(Serialize)]
         struct Args<T: Serialize> {
@@ -237,5 +238,15 @@ impl<'a> Widget<'a> {
         );
 
         Self { id, activity }
+    }
+}
+
+impl<'a, T: Deref<Target = Widget<'a>>> View<'a> for T {
+    fn get_id(&self) -> i32 {
+        self.id
+    }
+
+    fn get_activity(&self) -> Activity<'a> {
+        self.activity
     }
 }

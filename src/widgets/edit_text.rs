@@ -1,14 +1,13 @@
 use super::label::TextView;
 use super::View;
+use super::Widget;
 use crate::activity::Activity;
 use crate::layouts::Parent;
 use serde_json::json;
+use std::ops::Deref;
 
 #[derive(Copy, Clone)]
-pub struct EditText<'a> {
-    id: i32,
-    activity: Activity<'a>,
-}
+pub struct EditText<'a>(Widget<'a>);
 
 impl<'a> EditText<'a> {
     pub fn new(
@@ -20,7 +19,7 @@ impl<'a> EditText<'a> {
         block_input: bool,
         ty: &str,
     ) -> Self {
-        let mut args = json!({
+        let args = json!({
             "text": text,
             "singleline": single_line,
             "line": line,
@@ -28,13 +27,7 @@ impl<'a> EditText<'a> {
             "type": ty
         });
 
-        if let Some(id) = parent.id() {
-            args["parent"] = json!(id);
-        }
-
-        let id = activity.send_recv_msg("createEditText", args);
-
-        EditText { id, activity }
+        EditText(Widget::new(activity, "EditText", parent, args))
     }
 
     pub fn show_cursor(&self, show: bool) {
@@ -47,12 +40,9 @@ impl<'a> EditText<'a> {
 
 impl<'a> TextView<'a> for EditText<'a> {}
 
-impl<'a> View<'a> for EditText<'a> {
-    fn get_id(&self) -> i32 {
-        self.id
-    }
-
-    fn get_activity(&self) -> Activity<'a> {
-        self.activity
+impl<'a> Deref for EditText<'a> {
+    type Target = Widget<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }
