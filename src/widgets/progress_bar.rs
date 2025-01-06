@@ -1,7 +1,7 @@
 use super::View;
 use crate::layouts::Parent;
 use crate::widgets::Widget;
-use serde_json::json;
+use serde::Serialize;
 use std::ops::Deref;
 
 #[derive(Copy, Clone)]
@@ -13,8 +13,12 @@ impl<'a> ProgressBar<'a> {
     }
 
     pub fn set_progress(&self, progress: u8) {
-        let args = json!({"progress": progress});
-        self.send_msg("createProgressBar", args);
+        #[derive(Serialize)]
+        struct Args {
+            progress: u8,
+        }
+
+        self.send_msg("setProgress", Args { progress });
     }
 }
 

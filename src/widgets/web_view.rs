@@ -1,3 +1,4 @@
+use serde::Serialize;
 use super::View;
 use crate::layouts::Parent;
 use crate::widgets::Widget;
@@ -20,13 +21,20 @@ impl<'a> WebView<'a> {
 
 impl<'a> WebView<'a> {
     pub fn set_data(&self, text: &str, mime: &str) {
+        #[derive(Serialize)]
+        struct Args<'a> {
+            base64: bool,
+            mime: &'a str,
+            doc: String,
+        }
+
         self.send_msg(
             "setData",
-            json!({
-                "base64": true,
-                "mime": mime,
-                "doc": BASE64_STANDARD.encode(text.as_bytes()),
-            }),
+            Args {
+                base64: true,
+                mime,
+                doc: BASE64_STANDARD.encode(text.as_bytes()),
+            },
         )
     }
 }

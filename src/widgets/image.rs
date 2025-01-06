@@ -2,7 +2,7 @@ use super::View;
 use crate::layouts::Parent;
 use crate::widgets::Widget;
 use base64::prelude::*;
-use serde_json::json;
+use serde::Serialize;
 use std::io::Cursor;
 use std::ops::Deref;
 
@@ -20,11 +20,12 @@ impl<'a> ImageView<'a> {
         base_img
             .write_to(&mut Cursor::new(&mut buff), image::ImageFormat::Png)
             .unwrap();
-        let res_base64 = BASE64_STANDARD.encode(&buff);
-        let args = json!({
-            "img": res_base64
-        });
-        self.send_msg("setImage", args);
+        let img = BASE64_STANDARD.encode(&buff);
+        #[derive(Serialize)]
+        struct Args {
+            img: String,
+        }
+        self.send_msg("setImage", Args { img });
     }
 }
 

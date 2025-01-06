@@ -3,7 +3,6 @@ use super::View;
 use super::Widget;
 use crate::layouts::Parent;
 use serde::Serialize;
-use serde_json::json;
 use std::ops::Deref;
 
 #[derive(Copy, Clone)]
@@ -41,10 +40,12 @@ impl<'a> EditText<'a> {
     }
 
     pub fn show_cursor(&self, show: bool) {
-        let args = json!({
-            "show": show
-        });
-        self.send_msg("showCursor", args);
+        #[derive(Serialize)]
+        struct Args {
+            show: bool,
+        }
+
+        self.send_msg("showCursor", Args { show });
     }
 }
 
