@@ -1,13 +1,12 @@
+use std::ops::Deref;
+use crate::widgets::Widget;
 use super::Vec2;
 use super::{OneChildParent, Parent, View, ViewGroup};
 use crate::activity::Activity;
 use serde_json::json;
 
 #[derive(Copy, Clone)]
-pub struct NestedScrollView<'a> {
-    activity: Activity<'a>,
-    id: i32,
-}
+pub struct NestedScrollView<'a>(Widget<'a>);
 
 impl<'a> NestedScrollView<'a> {
     pub fn new(
@@ -17,18 +16,15 @@ impl<'a> NestedScrollView<'a> {
         snapping: bool,
         no_bar: bool,
     ) -> (Self, OneChildParent) {
-        let mut args =
+        let args =
             json!({ "fillviewport": fill_viewport, "snapping": snapping, "nobar": no_bar});
 
-        if let Some(id) = parent.id() {
-            args["parent"] = json!(id);
-        }
-        let id = activity.send_recv_msg("createNestedScrollView", args);
+        let widget = NestedScrollView(Widget::new(activity, "NestedScrollView", parent, args));
 
         (
-            NestedScrollView { id, activity },
+            widget,
             OneChildParent {
-                id,
+                id: widget.get_id(),
                 aid: activity.aid(),
             },
         )
@@ -48,13 +44,10 @@ impl<'a> NestedScrollView<'a> {
     }
 }
 
-impl<'a> View<'a> for NestedScrollView<'a> {
-    fn get_id(&self) -> i32 {
-        self.id
-    }
-
-    fn get_activity(&self) -> Activity<'a> {
-        self.activity
+impl<'a> Deref for NestedScrollView<'a> {
+    type Target = Widget<'a>;
+    fn deref(&self) -> &Widget<'a> {
+        &self.0
     }
 }
 

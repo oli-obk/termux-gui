@@ -43,12 +43,3 @@ impl<'a> Deref for TabLayout<'a> {
 }
 
 impl<'a> ViewGroup<'a> for TabLayout<'a> {}
-
-impl<'a, T: Deref<Target = Widget<'a>> + ViewGroup<'a>> Parent<'a> for T {
-    fn id(&self) -> Option<i32> {
-        Some(self.get_id())
-    }
-    fn aid(&self) -> i32 {
-        self.get_activity().aid()
-    }
-}

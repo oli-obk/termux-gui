@@ -229,6 +229,8 @@ impl<'a> Widget<'a> {
             args: T,
         }
 
+        assert_eq!(parent.aid(), activity.aid());
+
         let id = activity.send_recv_msg(
             &format!("create{name}"),
             Args {

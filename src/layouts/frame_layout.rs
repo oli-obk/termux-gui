@@ -1,45 +1,23 @@
-use super::{Parent, View, ViewGroup};
+use super::{Parent, ViewGroup};
 use crate::activity::Activity;
-use serde_json::json;
+use crate::widgets::Widget;
+use std::ops::Deref;
 
 #[derive(Copy, Clone)]
-pub struct FrameLayout<'a> {
-    activity: Activity<'a>,
-    id: i32,
-}
+pub struct FrameLayout<'a>(Widget<'a>);
 
 impl<'a> FrameLayout<'a> {
     #[must_use]
     pub fn new(activity: Activity<'a>, parent: impl Parent<'a>) -> Self {
-        let mut args = json!({});
-
-        if let Some(id) = parent.id() {
-            args["parent"] = json!(id);
-        }
-        assert_eq!(parent.aid(), activity.aid());
-        let id = activity.send_recv_msg("createFrameLayout", args);
-
-        FrameLayout { id, activity }
-    }
-}
-
-impl<'a> View<'a> for FrameLayout<'a> {
-    fn get_id(&self) -> i32 {
-        self.id
-    }
-
-    fn get_activity(&self) -> Activity<'a> {
-        self.activity
+        FrameLayout(Widget::new(activity, "FrameLayout", parent, ()))
     }
 }
 
 impl<'a> ViewGroup<'a> for FrameLayout<'a> {}
 
-impl Parent<'_> for FrameLayout<'_> {
-    fn id(&self) -> Option<i32> {
-        Some(self.id)
-    }
-    fn aid(&self) -> i32 {
-        self.activity.aid()
+impl<'a> Deref for FrameLayout<'a> {
+    type Target = Widget<'a>;
+    fn deref(&self) -> &Widget<'a> {
+        &self.0
     }
 }

@@ -1,13 +1,12 @@
 use super::Vec2;
 use super::{OneChildParent, Parent, View, ViewGroup};
 use crate::activity::Activity;
+use crate::widgets::Widget;
 use serde_json::json;
+use std::ops::Deref;
 
 #[derive(Copy, Clone)]
-pub struct HorizontalScrollView<'a> {
-    activity: Activity<'a>,
-    id: i32,
-}
+pub struct HorizontalScrollView<'a>(Widget<'a>);
 
 impl<'a> HorizontalScrollView<'a> {
     pub fn new(
@@ -17,18 +16,14 @@ impl<'a> HorizontalScrollView<'a> {
         snapping: bool,
         no_bar: bool,
     ) -> (Self, OneChildParent) {
-        let mut args =
+        let args =
             json!({ "fillviewport": fill_viewport, "snapping": snapping, "nobar": no_bar});
-
-        if let Some(id) = parent.id() {
-            args["parent"] = json!(id);
-        }
-        let id = activity.send_recv_msg("createHorizontalScrollView", args);
-
+        let widget =
+            HorizontalScrollView(Widget::new(activity, "HorizontalScrollView", parent, args));
         (
-            HorizontalScrollView { id, activity },
+            widget,
             OneChildParent {
-                id,
+                id: widget.get_id(),
                 aid: activity.aid(),
             },
         )
@@ -48,13 +43,10 @@ impl<'a> HorizontalScrollView<'a> {
     }
 }
 
-impl<'a> View<'a> for HorizontalScrollView<'a> {
-    fn get_id(&self) -> i32 {
-        self.id
-    }
-
-    fn get_activity(&self) -> Activity<'a> {
-        self.activity
+impl<'a> Deref for HorizontalScrollView<'a> {
+    type Target = Widget<'a>;
+    fn deref(&self) -> &Widget<'a> {
+        &self.0
     }
 }
 

@@ -1,45 +1,27 @@
-use super::{Parent, View, ViewGroup};
+use super::{Parent, ViewGroup};
 use crate::activity::Activity;
+use crate::widgets::Widget;
 use serde_json::json;
+use std::ops::Deref;
 
 #[derive(Copy, Clone)]
-pub struct LinearLayout<'a> {
-    activity: Activity<'a>,
-    id: i32,
-}
+pub struct LinearLayout<'a>(Widget<'a>);
 
 impl<'a> LinearLayout<'a> {
     pub fn new(activity: Activity<'a>, parent: impl Parent<'a>, vertical: bool) -> Self {
-        let mut args = json!({
+        let args = json!({
             "vertical": vertical
         });
 
-        if let Some(id) = parent.id() {
-            args["parent"] = json!(id);
-        }
-        let id = activity.send_recv_msg("createLinearLayout", args);
-
-        LinearLayout { id, activity }
-    }
-}
-
-impl<'a> View<'a> for LinearLayout<'a> {
-    fn get_id(&self) -> i32 {
-        self.id
-    }
-
-    fn get_activity(&self) -> Activity<'a> {
-        self.activity
+        LinearLayout(Widget::new(activity, "LinearLayout", parent, args))
     }
 }
 
 impl<'a> ViewGroup<'a> for LinearLayout<'a> {}
 
-impl Parent<'_> for LinearLayout<'_> {
-    fn id(&self) -> Option<i32> {
-        Some(self.id)
-    }
-    fn aid(&self) -> i32 {
-        self.activity.aid()
+impl<'a> Deref for LinearLayout<'a> {
+    type Target = Widget<'a>;
+    fn deref(&self) -> &Widget<'a> {
+        &self.0
     }
 }

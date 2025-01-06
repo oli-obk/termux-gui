@@ -1,26 +1,19 @@
 use super::{OneChildParent, Parent, View, ViewGroup};
 use crate::activity::Activity;
+use crate::widgets::Widget;
 use serde_json::json;
+use std::ops::Deref;
 
 #[derive(Copy, Clone)]
-pub struct SwipeRefreshLayout<'a> {
-    activity: Activity<'a>,
-    id: i32,
-}
+pub struct SwipeRefreshLayout<'a>(Widget<'a>);
 
 impl<'a> SwipeRefreshLayout<'a> {
     pub fn new(activity: Activity<'a>, parent: impl Parent<'a>) -> (Self, OneChildParent) {
-        let mut args = json!({});
-
-        if let Some(id) = parent.id() {
-            args["parent"] = json!(id);
-        }
-        let id = activity.send_recv_msg("createSwipeRefreshLayout", args);
-
+        let widget = SwipeRefreshLayout(Widget::new(activity, "SwipeRefreshLayout", parent, ()));
         (
-            SwipeRefreshLayout { id, activity },
+            widget,
             OneChildParent {
-                id,
+                id: widget.get_id(),
                 aid: activity.aid(),
             },
         )
@@ -34,13 +27,10 @@ impl<'a> SwipeRefreshLayout<'a> {
     }
 }
 
-impl<'a> View<'a> for SwipeRefreshLayout<'a> {
-    fn get_id(&self) -> i32 {
-        self.id
-    }
-
-    fn get_activity(&self) -> Activity<'a> {
-        self.activity
+impl<'a> Deref for SwipeRefreshLayout<'a> {
+    type Target = Widget<'a>;
+    fn deref(&self) -> &Widget<'a> {
+        &self.0
     }
 }
 

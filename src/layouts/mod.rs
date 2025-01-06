@@ -1,3 +1,5 @@
+use crate::widgets::Widget;
+use std::ops::Deref;
 use super::utils::Vec2;
 use super::View;
 
@@ -46,5 +48,14 @@ impl Parent<'_> for crate::activity::Activity<'_> {
     }
     fn aid(&self) -> i32 {
         self.aid()
+    }
+}
+
+impl<'a, T: Deref<Target = Widget<'a>> + ViewGroup<'a>> Parent<'a> for T {
+    fn id(&self) -> Option<i32> {
+        Some(self.get_id())
+    }
+    fn aid(&self) -> i32 {
+        self.get_activity().aid()
     }
 }
