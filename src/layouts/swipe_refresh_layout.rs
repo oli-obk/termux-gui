@@ -1,5 +1,4 @@
 use super::{OneChildParent, Parent, View, ViewGroup};
-use crate::activity::Activity;
 use crate::widgets::Widget;
 use serde_json::json;
 use std::ops::Deref;
@@ -8,13 +7,14 @@ use std::ops::Deref;
 pub struct SwipeRefreshLayout<'a>(Widget<'a>);
 
 impl<'a> SwipeRefreshLayout<'a> {
-    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>) -> (Self, OneChildParent) {
-        let widget = SwipeRefreshLayout(Widget::new(activity, "SwipeRefreshLayout", parent, ()));
+    pub fn new(parent: impl Parent<'a>) -> (Self, OneChildParent<'a>) {
+        let activity = parent.activity();
+        let widget = SwipeRefreshLayout(Widget::new("SwipeRefreshLayout", parent, ()));
         (
             widget,
             OneChildParent {
                 id: widget.get_id(),
-                aid: activity.aid(),
+                activity,
             },
         )
     }

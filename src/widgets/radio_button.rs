@@ -1,8 +1,7 @@
-use crate::widgets::Serialize;
 use super::compound_button::CompoundButton;
 use super::label::TextView;
-use crate::activity::Activity;
 use crate::layouts::Parent;
+use crate::widgets::Serialize;
 use crate::widgets::Widget;
 use std::ops::Deref;
 
@@ -10,19 +9,14 @@ use std::ops::Deref;
 pub struct RadioButton<'a>(Widget<'a>);
 
 impl<'a> RadioButton<'a> {
-    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>, text: &str, checked: bool) -> Self {
+    pub fn new(parent: impl Parent<'a>, text: &str, checked: bool) -> Self {
         #[derive(Serialize)]
         struct Args<'a> {
             text: &'a str,
             checked: bool,
         }
 
-        RadioButton(Widget::new(
-            activity,
-            "RadioButton",
-            parent,
-            Args { text, checked },
-        ))
+        RadioButton(Widget::new("RadioButton", parent, Args { text, checked }))
     }
 }
 

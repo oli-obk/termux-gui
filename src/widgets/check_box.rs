@@ -1,7 +1,6 @@
 use super::compound_button::CompoundButton;
 use super::label::TextView;
 use super::Widget;
-use crate::activity::Activity;
 use crate::layouts::Parent;
 use serde::Serialize;
 use std::ops::Deref;
@@ -10,19 +9,14 @@ use std::ops::Deref;
 pub struct CheckBox<'a>(Widget<'a>);
 
 impl<'a> CheckBox<'a> {
-    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>, text: &str, checked: bool) -> Self {
+    pub fn new(parent: impl Parent<'a>, text: &str, checked: bool) -> Self {
         #[derive(Serialize)]
         struct Args<'a> {
             text: &'a str,
             checked: bool,
         }
 
-        CheckBox(Widget::new(
-            activity,
-            "CheckBox",
-            parent,
-            Args { text, checked },
-        ))
+        CheckBox(Widget::new("CheckBox", parent, Args { text, checked }))
     }
 }
 

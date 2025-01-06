@@ -1,5 +1,4 @@
 use super::View;
-use crate::activity::Activity;
 use crate::layouts::Parent;
 use crate::widgets::Widget;
 use base64::prelude::BASE64_STANDARD;
@@ -11,8 +10,8 @@ use std::ops::Deref;
 pub struct WebView<'a>(Widget<'a>);
 
 impl<'a> WebView<'a> {
-    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>) -> Self {
-        let web = WebView(Widget::new(activity, "WebView", parent, ()));
+    pub fn new(parent: impl Parent<'a>) -> Self {
+        let web = WebView(Widget::new("WebView", parent, ()));
         web.send_msg("setWidth", json!({"width": "MATCH_PARENT"}));
         web.send_msg("setHeight", json!({"height": "MATCH_PARENT"}));
         web

@@ -1,31 +1,28 @@
-use std::ops::Deref;
-use crate::widgets::Widget;
 use super::Vec2;
 use super::{OneChildParent, Parent, View, ViewGroup};
-use crate::activity::Activity;
+use crate::widgets::Widget;
 use serde_json::json;
+use std::ops::Deref;
 
 #[derive(Copy, Clone)]
 pub struct NestedScrollView<'a>(Widget<'a>);
 
 impl<'a> NestedScrollView<'a> {
     pub fn new(
-        activity: Activity<'a>,
         parent: impl Parent<'a>,
         fill_viewport: bool,
         snapping: bool,
         no_bar: bool,
-    ) -> (Self, OneChildParent) {
-        let args =
-            json!({ "fillviewport": fill_viewport, "snapping": snapping, "nobar": no_bar});
-
-        let widget = NestedScrollView(Widget::new(activity, "NestedScrollView", parent, args));
+    ) -> (Self, OneChildParent<'a>) {
+        let args = json!({ "fillviewport": fill_viewport, "snapping": snapping, "nobar": no_bar});
+        let activity = parent.activity();
+        let widget = NestedScrollView(Widget::new("NestedScrollView", parent, args));
 
         (
             widget,
             OneChildParent {
                 id: widget.get_id(),
-                aid: activity.aid(),
+                activity,
             },
         )
     }

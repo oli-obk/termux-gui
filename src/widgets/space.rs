@@ -1,4 +1,3 @@
-use crate::activity::Activity;
 use crate::layouts::Parent;
 use crate::widgets::Widget;
 use std::ops::Deref;
@@ -7,8 +6,8 @@ use std::ops::Deref;
 pub struct Space<'a>(Widget<'a>);
 
 impl<'a> Space<'a> {
-    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>) -> Self {
-        Space(Widget::new(activity, "Space", parent, ()))
+    pub fn new(parent: impl Parent<'a>) -> Self {
+        Space(Widget::new("Space", parent, ()))
     }
 }
 

@@ -1,5 +1,4 @@
 use super::View;
-use crate::activity::Activity;
 use crate::layouts::Parent;
 use crate::widgets::Widget;
 use base64::prelude::*;
@@ -11,8 +10,8 @@ use std::ops::Deref;
 pub struct ImageView<'a>(Widget<'a>);
 
 impl<'a> ImageView<'a> {
-    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>) -> Self {
-        ImageView(Widget::new(activity, "ImageView", parent, ()))
+    pub fn new(parent: impl Parent<'a>) -> Self {
+        ImageView(Widget::new("ImageView", parent, ()))
     }
 
     pub fn set_image(&self, img: &str) {

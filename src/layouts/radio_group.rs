@@ -1,17 +1,13 @@
-use std::ops::Deref;
-use crate::widgets::Widget;
 use super::{Parent, ViewGroup};
-use crate::activity::Activity;
-use serde_json::json;
+use crate::widgets::Widget;
+use std::ops::Deref;
 
 #[derive(Copy, Clone)]
 pub struct RadioGroup<'a>(Widget<'a>);
 
 impl<'a> RadioGroup<'a> {
-    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>) -> Self {
-        let args = json!({});
-
-        RadioGroup(Widget::new(activity, "RadioGroup", parent, args))
+    pub fn new(parent: impl Parent<'a>) -> Self {
+        RadioGroup(Widget::new("RadioGroup", parent, ()))
     }
 }
 

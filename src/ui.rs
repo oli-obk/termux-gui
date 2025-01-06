@@ -2,7 +2,7 @@ use super::activity::Activity;
 use super::layouts::{
     frame_layout::FrameLayout, horizontal_scroll_view::HorizontalScrollView,
     linear_layout::LinearLayout, nested_scroll_view::NestedScrollView, radio_group::RadioGroup,
-    swipe_refresh_layout::SwipeRefreshLayout, tab_layout::TabLayout, OneChildParent, Parent,
+    swipe_refresh_layout::SwipeRefreshLayout, tab_layout::TabLayout, OneChildParent,
 };
 #[cfg(feature = "image")]
 use super::widgets::image::ImageView;
@@ -14,153 +14,139 @@ use super::widgets::{
 #[cfg(feature = "web")]
 use crate::widgets::web_view::WebView;
 
-impl<'a> Activity<'a> {
-    pub fn radio_button(self, parent: impl Parent<'a>, text: &str, check: bool) -> RadioButton<'a> {
-        RadioButton::new(self, parent, text, check)
+pub trait Parent<'a>: Sized {
+    fn id(&self) -> Option<i32>;
+    fn aid(&self) -> i32 {
+        self.activity().aid()
+    }
+    fn activity(&self) -> Activity<'a>;
+
+    fn radio_button(self, text: &str, check: bool) -> RadioButton<'a> {
+        RadioButton::new(self, text, check)
     }
 
-    pub fn default_radio_button(self, parent: impl Parent<'a>, text: &str) -> RadioButton<'a> {
-        self.radio_button(parent, text, false)
+    fn default_radio_button(self, text: &str) -> RadioButton<'a> {
+        self.radio_button(text, false)
     }
 
-    pub fn toggle_button(
-        self,
-        parent: impl Parent<'a>,
-        text: &str,
-        check: bool,
-    ) -> ToggleButton<'a> {
-        ToggleButton::new(self, parent, text, check)
+    fn toggle_button(self, text: &str, check: bool) -> ToggleButton<'a> {
+        ToggleButton::new(self, text, check)
     }
 
-    pub fn default_toggle_button(self, parent: impl Parent<'a>, text: &str) -> ToggleButton<'a> {
-        self.toggle_button(parent, text, false)
+    fn default_toggle_button(self, text: &str) -> ToggleButton<'a> {
+        self.toggle_button(text, false)
     }
 
-    pub fn switch(self, parent: impl Parent<'a>, text: &str, check: bool) -> Switch<'a> {
-        Switch::new(self, parent, text, check)
+    fn switch(self, text: &str, check: bool) -> Switch<'a> {
+        Switch::new(self, text, check)
     }
 
-    pub fn default_switch(self, parent: impl Parent<'a>, text: &str) -> Switch<'a> {
-        self.switch(parent, text, false)
+    fn default_switch(self, text: &str) -> Switch<'a> {
+        self.switch(text, false)
     }
 
-    pub fn check_box(self, parent: impl Parent<'a>, text: &str, check: bool) -> CheckBox<'a> {
-        CheckBox::new(self, parent, text, check)
+    fn check_box(self, text: &str, check: bool) -> CheckBox<'a> {
+        CheckBox::new(self, text, check)
     }
 
-    pub fn default_check_box(self, parent: impl Parent<'a>, text: &str) -> CheckBox<'a> {
-        self.check_box(parent, text, false)
+    fn default_check_box(self, text: &str) -> CheckBox<'a> {
+        self.check_box(text, false)
     }
 
-    pub fn label(
-        self,
-        parent: impl Parent<'a>,
-        text: &str,
-        selectable_text: bool,
-        clickable_links: bool,
-    ) -> Label<'a> {
-        Label::new(self, parent, text, selectable_text, clickable_links)
+    fn label(self, text: &str, selectable_text: bool, clickable_links: bool) -> Label<'a> {
+        Label::new(self, text, selectable_text, clickable_links)
     }
 
-    pub fn default_label(self, parent: impl Parent<'a>, text: &str) -> Label<'a> {
-        self.label(parent, text, false, false)
+    fn default_label(self, text: &str) -> Label<'a> {
+        self.label(text, false, false)
     }
 
     #[cfg(feature = "image")]
-    pub fn image_view(self, parent: impl Parent<'a>) -> ImageView<'a> {
-        ImageView::new(self, parent)
+    fn image_view(self) -> ImageView<'a> {
+        ImageView::new(self)
     }
 
     #[cfg(feature = "web")]
-    pub fn web_view(self, parent: impl Parent<'a>) -> WebView<'a> {
-        WebView::new(self, parent)
+    fn web_view(self) -> WebView<'a> {
+        WebView::new(self)
     }
 
-    pub fn spinner(self, parent: impl Parent<'a>) -> Spinner<'a> {
-        Spinner::new(self, parent)
+    fn spinner(self) -> Spinner<'a> {
+        Spinner::new(self)
     }
 
-    pub fn space(self, parent: impl Parent<'a>) -> Space<'a> {
-        Space::new(self, parent)
+    fn space(self) -> Space<'a> {
+        Space::new(self)
     }
 
-    pub fn progress_bar(self, parent: impl Parent<'a>) -> ProgressBar<'a> {
-        ProgressBar::new(self, parent)
+    fn progress_bar(self) -> ProgressBar<'a> {
+        ProgressBar::new(self)
     }
 
-    pub fn button(self, parent: impl Parent<'a>, text: &str) -> Button<'a> {
-        Button::new(self, parent, text)
+    fn button(self, text: &str) -> Button<'a> {
+        Button::new(self, text)
     }
 
-    pub fn edit_text(
+    fn edit_text(
         self,
-        parent: impl Parent<'a>,
+
         text: &str,
         single_line: bool,
         line: bool,
         block_input: bool,
         ty: &str,
     ) -> EditText<'a> {
-        EditText::new(self, parent, text, single_line, line, block_input, ty)
+        EditText::new(self, text, single_line, line, block_input, ty)
     }
 
-    pub fn default_edit_text(self, parent: impl Parent<'a>, text: &str) -> EditText<'a> {
-        self.edit_text(parent, text, false, true, false, "text")
+    fn default_edit_text(self, text: &str) -> EditText<'a> {
+        self.edit_text(text, false, true, false, "text")
     }
 
-    pub fn linear_layout(self, parent: impl Parent<'a>, vertical: bool) -> LinearLayout<'a> {
-        LinearLayout::new(self, parent, vertical)
+    fn linear_layout(self, vertical: bool) -> LinearLayout<'a> {
+        LinearLayout::new(self, vertical)
     }
 
-    pub fn swipe_refresh_layout(
+    fn swipe_refresh_layout(self) -> (SwipeRefreshLayout<'a>, OneChildParent<'a>) {
+        SwipeRefreshLayout::new(self)
+    }
+    fn radio_group(self) -> RadioGroup<'a> {
+        RadioGroup::new(self)
+    }
+
+    fn tab_layout(self) -> TabLayout<'a> {
+        TabLayout::new(self)
+    }
+
+    fn frame_layout(self) -> FrameLayout<'a> {
+        FrameLayout::new(self)
+    }
+
+    fn nested_scroll_view(
         self,
-        parent: impl Parent<'a>,
-    ) -> (SwipeRefreshLayout<'a>, OneChildParent) {
-        SwipeRefreshLayout::new(self, parent)
-    }
-    pub fn radio_group(self, parent: impl Parent<'a>) -> RadioGroup<'a> {
-        RadioGroup::new(self, parent)
-    }
 
-    pub fn tab_layout(self, parent: impl Parent<'a>) -> TabLayout<'a> {
-        TabLayout::new(self, parent)
-    }
-
-    pub fn frame_layout(self, parent: impl Parent<'a>) -> FrameLayout<'a> {
-        FrameLayout::new(self, parent)
-    }
-
-    pub fn nested_scroll_view(
-        self,
-        parent: impl Parent<'a>,
         fill_viewport: bool,
         snapping: bool,
         no_bar: bool,
-    ) -> (NestedScrollView<'a>, OneChildParent) {
-        NestedScrollView::new(self, parent, fill_viewport, snapping, no_bar)
+    ) -> (NestedScrollView<'a>, OneChildParent<'a>) {
+        NestedScrollView::new(self, fill_viewport, snapping, no_bar)
     }
 
-    pub fn default_nested_scroll_view(
-        self,
-        parent: impl Parent<'a>,
-    ) -> (NestedScrollView<'a>, OneChildParent) {
-        self.nested_scroll_view(parent, false, false, false)
+    fn default_nested_scroll_view(self) -> (NestedScrollView<'a>, OneChildParent<'a>) {
+        self.nested_scroll_view(false, false, false)
     }
 
-    pub fn horizontal_scroll_view(
+    fn horizontal_scroll_view(
         self,
-        parent: impl Parent<'a>,
+
         fill_viewport: bool,
         snapping: bool,
         no_bar: bool,
-    ) -> (HorizontalScrollView<'a>, OneChildParent) {
-        HorizontalScrollView::new(self, parent, fill_viewport, snapping, no_bar)
+    ) -> (HorizontalScrollView<'a>, OneChildParent<'a>) {
+        HorizontalScrollView::new(self, fill_viewport, snapping, no_bar)
     }
 
-    pub fn default_horizontal_scroll_view(
-        self,
-        parent: impl Parent<'a>,
-    ) -> (HorizontalScrollView<'a>, OneChildParent) {
-        self.horizontal_scroll_view(parent, false, false, false)
+    fn default_horizontal_scroll_view(self) -> (HorizontalScrollView<'a>, OneChildParent<'a>) {
+        self.horizontal_scroll_view(false, false, false)
     }
 }

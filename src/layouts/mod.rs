@@ -1,7 +1,8 @@
-use crate::widgets::Widget;
-use std::ops::Deref;
 use super::utils::Vec2;
 use super::View;
+use crate::activity::Activity;
+use crate::widgets::Widget;
+use std::ops::Deref;
 
 pub mod frame_layout;
 pub mod horizontal_scroll_view;
@@ -12,42 +13,39 @@ pub mod swipe_refresh_layout;
 pub mod tab_layout;
 
 pub trait ViewGroup<'a>: View<'a> + Sized + Copy {
-    fn clear_children(&self) -> OneChildParent {
+    fn clear_children(&self) -> OneChildParent<'a> {
         self.send_msg("deleteChildren", ());
         OneChildParent {
             id: self.get_id(),
-            aid: self.get_activity().aid(),
+            activity: self.get_activity(),
         }
     }
 }
 
-pub trait Parent<'a> {
-    fn id(&self) -> Option<i32>;
-    fn aid(&self) -> i32;
-}
-
 /// A layout that can only have one child needs this
 /// token for registering said child
-pub struct OneChildParent {
-    aid: i32,
+pub struct OneChildParent<'a> {
+    activity: Activity<'a>,
     id: i32,
 }
 
-impl Parent<'_> for OneChildParent {
+pub use crate::ui::Parent;
+
+impl<'a> Parent<'a> for OneChildParent<'a> {
     fn id(&self) -> Option<i32> {
         Some(self.id)
     }
-    fn aid(&self) -> i32 {
-        self.aid
+    fn activity(&self) -> Activity<'a> {
+        self.activity
     }
 }
 
-impl Parent<'_> for crate::activity::Activity<'_> {
+impl<'a> Parent<'a> for Activity<'a> {
     fn id(&self) -> Option<i32> {
         None
     }
-    fn aid(&self) -> i32 {
-        self.aid()
+    fn activity(&self) -> Activity<'a> {
+        *self
     }
 }
 
@@ -55,7 +53,7 @@ impl<'a, T: Deref<Target = Widget<'a>> + ViewGroup<'a>> Parent<'a> for T {
     fn id(&self) -> Option<i32> {
         Some(self.get_id())
     }
-    fn aid(&self) -> i32 {
-        self.get_activity().aid()
+    fn activity(&self) -> Activity<'a> {
+        self.get_activity()
     }
 }

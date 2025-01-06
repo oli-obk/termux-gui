@@ -1,9 +1,8 @@
-use serde::Serialize;
 use super::label::TextView;
 use super::View;
 use super::Widget;
-use crate::activity::Activity;
 use crate::layouts::Parent;
+use serde::Serialize;
 use serde_json::json;
 use std::ops::Deref;
 
@@ -12,7 +11,6 @@ pub struct EditText<'a>(Widget<'a>);
 
 impl<'a> EditText<'a> {
     pub fn new(
-        activity: Activity<'a>,
         parent: impl Parent<'a>,
         text: &str,
         singleline: bool,
@@ -30,7 +28,6 @@ impl<'a> EditText<'a> {
         }
 
         EditText(Widget::new(
-            activity,
             "EditText",
             parent,
             Args {

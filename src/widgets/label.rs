@@ -1,5 +1,4 @@
 use super::{Color, View};
-use crate::activity::Activity;
 use crate::layouts::Parent;
 use crate::widgets::Widget;
 use serde::Serialize;
@@ -11,7 +10,6 @@ pub struct Label<'a>(Widget<'a>);
 
 impl<'a> Label<'a> {
     pub fn new(
-        activity: Activity<'a>,
         parent: impl Parent<'a>,
         text: &str,
         selectable_text: bool,
@@ -25,7 +23,6 @@ impl<'a> Label<'a> {
             clickable_links: bool,
         }
         Label(Widget::new(
-            activity,
             "TextView",
             parent,
             Args {

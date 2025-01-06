@@ -1,6 +1,5 @@
 use super::Vec2;
 use super::{Parent, View, ViewGroup};
-use crate::activity::Activity;
 use crate::widgets::Widget;
 use serde_json::json;
 use std::ops::Deref;
@@ -9,8 +8,8 @@ use std::ops::Deref;
 pub struct TabLayout<'a>(Widget<'a>);
 
 impl<'a> TabLayout<'a> {
-    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>) -> Self {
-        TabLayout(Widget::new(activity, "TabLayout", parent, ()))
+    pub fn new(parent: impl Parent<'a>) -> Self {
+        TabLayout(Widget::new("TabLayout", parent, ()))
     }
 
     pub fn set_scroll_position(&self, pos: Vec2<u16>, smooth: bool) {

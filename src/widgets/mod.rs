@@ -215,12 +215,7 @@ pub struct Widget<'a> {
 }
 
 impl<'a> Widget<'a> {
-    pub fn new(
-        activity: Activity<'a>,
-        name: &str,
-        parent: impl Parent<'a>,
-        args: impl Serialize,
-    ) -> Self {
+    pub fn new(name: &str, parent: impl Parent<'a>, args: impl Serialize) -> Self {
         #[derive(Serialize)]
         struct Args<T: Serialize> {
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -229,9 +224,7 @@ impl<'a> Widget<'a> {
             args: T,
         }
 
-        assert_eq!(parent.aid(), activity.aid());
-
-        let id = activity.send_recv_msg(
+        let id = parent.activity().send_recv_msg(
             &format!("create{name}"),
             Args {
                 parent: parent.id(),
@@ -239,7 +232,10 @@ impl<'a> Widget<'a> {
             },
         );
 
-        Self { id, activity }
+        Self {
+            id,
+            activity: parent.activity(),
+        }
     }
 }
 

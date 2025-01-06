@@ -1,7 +1,6 @@
-use crate::widgets::Serialize;
 use super::View;
-use crate::activity::Activity;
 use crate::layouts::Parent;
+use crate::widgets::Serialize;
 use crate::widgets::Widget;
 use std::ops::Deref;
 
@@ -9,8 +8,8 @@ use std::ops::Deref;
 pub struct Spinner<'a>(Widget<'a>);
 
 impl<'a> Spinner<'a> {
-    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>) -> Self {
-        Spinner(Widget::new(activity, "Spinner", parent, ()))
+    pub fn new(parent: impl Parent<'a>) -> Self {
+        Spinner(Widget::new("Spinner", parent, ()))
     }
 
     pub fn set_list(&self, list: &[&str]) {

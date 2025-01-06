@@ -1,5 +1,4 @@
 use super::{Parent, ViewGroup};
-use crate::activity::Activity;
 use crate::widgets::Widget;
 use serde_json::json;
 use std::ops::Deref;
@@ -8,12 +7,12 @@ use std::ops::Deref;
 pub struct LinearLayout<'a>(Widget<'a>);
 
 impl<'a> LinearLayout<'a> {
-    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>, vertical: bool) -> Self {
+    pub fn new(parent: impl Parent<'a>, vertical: bool) -> Self {
         let args = json!({
             "vertical": vertical
         });
 
-        LinearLayout(Widget::new(activity, "LinearLayout", parent, args))
+        LinearLayout(Widget::new("LinearLayout", parent, args))
     }
 }
 
