@@ -1,3 +1,4 @@
+use serde::Serialize;
 use super::label::TextView;
 use super::View;
 use super::Widget;
@@ -14,20 +15,32 @@ impl<'a> EditText<'a> {
         activity: Activity<'a>,
         parent: impl Parent<'a>,
         text: &str,
-        single_line: bool,
+        singleline: bool,
         line: bool,
-        block_input: bool,
-        ty: &str,
+        blockinput: bool,
+        r#type: &str,
     ) -> Self {
-        let args = json!({
-            "text": text,
-            "singleline": single_line,
-            "line": line,
-            "blockinput": block_input,
-            "type": ty
-        });
+        #[derive(Serialize)]
+        struct Args<'a> {
+            text: &'a str,
+            singleline: bool,
+            line: bool,
+            blockinput: bool,
+            r#type: &'a str,
+        }
 
-        EditText(Widget::new(activity, "EditText", parent, args))
+        EditText(Widget::new(
+            activity,
+            "EditText",
+            parent,
+            Args {
+                text,
+                singleline,
+                line,
+                blockinput,
+                r#type,
+            },
+        ))
     }
 
     pub fn show_cursor(&self, show: bool) {

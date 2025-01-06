@@ -1,9 +1,10 @@
-use std::ops::Deref;
-use crate::widgets::Widget;
 use super::{Color, View};
 use crate::activity::Activity;
 use crate::layouts::Parent;
+use crate::widgets::Widget;
+use serde::Serialize;
 use serde_json::json;
+use std::ops::Deref;
 
 #[derive(Copy, Clone)]
 pub struct Label<'a>(Widget<'a>);
@@ -16,12 +17,23 @@ impl<'a> Label<'a> {
         selectable_text: bool,
         clickable_links: bool,
     ) -> Self {
-        let args = json!({
-            "text": text,
-            "selectableText": selectable_text,
-            "clickableLinks": clickable_links
-        });
-        Label(Widget::new(activity, "TextView", parent, args))
+        #[derive(Serialize)]
+        #[serde(rename_all = "camelCase")]
+        struct Args<'a> {
+            text: &'a str,
+            selectable_text: bool,
+            clickable_links: bool,
+        }
+        Label(Widget::new(
+            activity,
+            "TextView",
+            parent,
+            Args {
+                text,
+                selectable_text,
+                clickable_links,
+            },
+        ))
     }
 }
 

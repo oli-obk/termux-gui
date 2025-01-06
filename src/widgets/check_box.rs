@@ -3,21 +3,26 @@ use super::label::TextView;
 use super::Widget;
 use crate::activity::Activity;
 use crate::layouts::Parent;
-use serde_json::json;
+use serde::Serialize;
 use std::ops::Deref;
 
 #[derive(Copy, Clone)]
 pub struct CheckBox<'a>(Widget<'a>);
 
 impl<'a> CheckBox<'a> {
-    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>, text: &str, check: bool) -> Self {
-        let args = json!({
+    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>, text: &str, checked: bool) -> Self {
+        #[derive(Serialize)]
+        struct Args<'a> {
+            text: &'a str,
+            checked: bool,
+        }
 
-            "text": text,
-            "checked": check
-        });
-
-        CheckBox(Widget::new(activity, "CheckBox", parent, args))
+        CheckBox(Widget::new(
+            activity,
+            "CheckBox",
+            parent,
+            Args { text, checked },
+        ))
     }
 }
 

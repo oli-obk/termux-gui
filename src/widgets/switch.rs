@@ -1,22 +1,28 @@
+use crate::widgets::Serialize;
 use super::compound_button::CompoundButton;
 use super::label::TextView;
 use crate::activity::Activity;
 use crate::layouts::Parent;
 use crate::widgets::Widget;
-use serde_json::json;
 use std::ops::Deref;
 
 #[derive(Copy, Clone)]
 pub struct Switch<'a>(Widget<'a>);
 
 impl<'a> Switch<'a> {
-    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>, text: &str, check: bool) -> Self {
-        let args = json!({
-            "text": text,
-            "checked": check
-        });
+    pub fn new(activity: Activity<'a>, parent: impl Parent<'a>, text: &str, checked: bool) -> Self {
+        #[derive(Serialize)]
+        struct Args<'a> {
+            text: &'a str,
+            checked: bool,
+        }
 
-        Switch(Widget::new(activity, "Switch", parent, args))
+        Switch(Widget::new(
+            activity,
+            "Switch",
+            parent,
+            Args { checked, text },
+        ))
     }
 }
 
