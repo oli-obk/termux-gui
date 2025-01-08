@@ -62,7 +62,7 @@ impl<'a, E> Handler<'a, E> {
                     }
                 }
             }
-            Event::Other { .. } => {}
+            Event::App(_) => {}
         }
         Ok(())
     }
@@ -75,8 +75,7 @@ impl<'a, E> Handler<'a, E> {
 
             match &event {
                 Event::Activity {
-                    finishing: true,
-                    kind: event::Activity::Destroy,
+                    kind: event::Activity::Destroy { finishing: true },
                     aid,
                 } => {
                     self.activity.remove(aid).unwrap();

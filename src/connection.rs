@@ -51,10 +51,13 @@ pub fn connect() -> (UnixStream, UnixStream) {
 fn deser<T: for<'a> Deserialize<'a>>(bytes: &[u8]) -> Result<T, serde_json::Error> {
     let mut value = serde_json::from_slice::<serde_json::Map<String, Value>>(bytes)?;
     if let Some(inner) = value.remove("value") {
-        let Value::Object(inner) = inner else {
-            return Err(serde::de::Error::custom("value field is not a map"));
-        };
-        value.extend(inner);
+        match inner {
+            Value::Object(inner) => value.extend(inner),
+            // reinsert for the few events that want it like this
+            other => {
+                value.insert("value".to_string(), other);
+            }
+        }
     }
 
     serde_json::value::from_value(value.into())

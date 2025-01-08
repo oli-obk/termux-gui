@@ -24,8 +24,7 @@ fn main() {
     loop {
         match tgui.event().unwrap() {
             Event::Activity {
-                kind: event::Activity::Destroy,
-                finishing: true,
+                kind: event::Activity::Destroy { finishing: true },
                 ..
             } => break,
             Event::Widget {
